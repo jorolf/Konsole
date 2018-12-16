@@ -9,6 +9,8 @@ namespace Konsole.Graphics
     {
         public Vector2<int> Position;
         public char Char = '\0';
+        public ConsoleColor BackgroundColour;
+        public ConsoleColor ForegroundColour;
 
         public GridChar(Vector2<int> position)
         {

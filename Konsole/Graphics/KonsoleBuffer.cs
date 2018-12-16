@@ -13,10 +13,26 @@ namespace Konsole.Graphics
         {
             new Box()
             {
-                Position = (Vector2<int>)10,
-                Size = (Vector2<int>)5,
-                Fill = '█'
+                Position = (Vector2<int>)6,
+                Size = (Vector2<int>)15,
+                Fill = '█',
+                FillColour = ConsoleColor.Blue
+            },
+            new Box()
+            {
+                Position = (Vector2<int>)5,
+                Size = (Vector2<int>)10,
+                Fill = 'X',
+                FillColour = ConsoleColor.Red
+            },
+            new Box()
+            {
+                Position = (Vector2<int>)4,
+                Size = (Vector2<int>)6,
+                Fill = 'O',
+                FillColour = ConsoleColor.White
             }
+
         };
 
         
@@ -43,6 +59,8 @@ namespace Konsole.Graphics
                         if (gridChar.Position.Y >= drawable.Position.Y && gridChar.Position.Y < drawable.Position.Y + drawable.Size.Y)
                         {
                             gridChar.Char = drawable.Fill;
+                            gridChar.BackgroundColour = gridChar.ForegroundColour;
+                            gridChar.ForegroundColour = drawable.FillColour;
                         }
                     }
                 }
@@ -54,10 +72,20 @@ namespace Konsole.Graphics
             string buffer = "";
             foreach (GridChar gridItem in Grid)
             {
-                buffer += gridItem.Char;
+                if (Console.BackgroundColor == gridItem.BackgroundColour && Console.ForegroundColor == gridItem.ForegroundColour)
+                {
+                    buffer += gridItem.Char;
+                }
+                else
+                {
+                    Console.Write(buffer);
+                    Console.BackgroundColor = gridItem.BackgroundColour;
+                    Console.ForegroundColor = gridItem.ForegroundColour;
+                    buffer = gridItem.Char.ToString();
+                }
             }
-            Console.Clear();
-            Console.Write(buffer);
+            //Console.Clear();
+
         }
     }
 }

@@ -7,7 +7,7 @@ namespace ConsoleApp1
     {
         static void Main()
         {
-            var window = new KonsoleWindow(25, 25);           
+            var window = new KonsoleWindow(30, 30);           
             window.Start();
             //Console.WriteLine("Despacito");
             Console.ReadLine();

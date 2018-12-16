@@ -19,5 +19,6 @@ namespace Konsole.Graphics.Drawables
         /// The character that should be used to fill this Drawable's surface.
         /// </summary>
         public char Fill;
+        public ConsoleColor FillColour;        
     }
 }
