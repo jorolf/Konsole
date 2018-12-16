@@ -1,36 +1,40 @@
-﻿using Konsole.Graphics.Drawables;
+﻿using Konsole.Graphics.Colour;
+using Konsole.Graphics.Drawables;
 using Konsole.Vectors;
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Konsole.Graphics
 {
     public class KonsoleBuffer
     {
+        private StringBuilder buffer = new StringBuilder();
+
         public Vector2<int> Size;
         public GridChar[] Grid;
-        public Box[] Drawables = new Box[]
+        public Drawable[] Drawables = new Drawable[]
         {
             new Box()
             {
                 Position = (Vector2<int>)6,
                 Size = (Vector2<int>)15,
                 Fill = '█',
-                FillColour = ConsoleColor.Blue
+                FillColour = KonsoleColour.Yellow
             },
             new Box()
             {
                 Position = (Vector2<int>)5,
                 Size = (Vector2<int>)10,
                 Fill = 'X',
-                FillColour = ConsoleColor.Red
+                FillColour = KonsoleColour.Red
             },
             new Box()
             {
                 Position = (Vector2<int>)4,
                 Size = (Vector2<int>)6,
                 Fill = 'O',
-                FillColour = ConsoleColor.White
+                FillColour = KonsoleColour.White
             }
 
         };
@@ -69,23 +73,21 @@ namespace Konsole.Graphics
 
         public void PushToConsole()
         {
-            string buffer = "";
+            KonsoleColour backgroundBuffer = KonsoleColour.Black;
+            KonsoleColour foregroundBuffer = KonsoleColour.Black;
             foreach (GridChar gridItem in Grid)
             {
-                if (Console.BackgroundColor == gridItem.BackgroundColour && Console.ForegroundColor == gridItem.ForegroundColour)
-                {
-                    buffer += gridItem.Char;
-                }
+                if (backgroundBuffer == gridItem.BackgroundColour && foregroundBuffer == gridItem.ForegroundColour)                
+                    buffer.Append(gridItem.Char);                
                 else
                 {
-                    Console.Write(buffer);
-                    Console.BackgroundColor = gridItem.BackgroundColour;
-                    Console.ForegroundColor = gridItem.ForegroundColour;
-                    buffer = gridItem.Char.ToString();
+                    buffer.Append(gridItem.BackgroundColour.ToBackgroundColour());
+                    buffer.Append(gridItem.ForegroundColour.ToForegroundColour());
+                    buffer.Append(gridItem.Char);
                 }
             }
-            //Console.Clear();
-
+            Console.Write(buffer);
+            buffer.Clear();
         }
     }
 }

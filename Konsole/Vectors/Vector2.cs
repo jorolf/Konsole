@@ -1,22 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Numerics;
 
 namespace Konsole.Vectors
 {
-    public class Vector2
+    public class Vector2 : Vector2<float>
     {
-        public float X;
-        public float Y;
-        public Vector2(float x, float y)
+        public Vector2(float x, float y) : base(x, y)
         {
-            X = x;
-            Y = y;
-        }
-        
-        public static explicit operator Vector2(float x)
-        {
-            return new Vector2(x, x);
+
         }
     }
     public class Vector2<T> where T : struct

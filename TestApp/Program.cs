@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Konsole;
 
 namespace ConsoleApp1
@@ -9,8 +10,8 @@ namespace ConsoleApp1
         {
             var window = new KonsoleWindow(30, 30);           
             window.Start();
-            //Console.WriteLine("Despacito");
             Console.ReadLine();
         }
+
     }
 }

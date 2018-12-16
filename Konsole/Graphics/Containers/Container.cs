@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Konsole.Graphics.Drawables
+namespace Konsole.Graphics.Containers
 {
-    class Box : Drawable
+    class Container
     {
     }
 }
