@@ -4,7 +4,8 @@ using System.Text;
 
 namespace Konsole.Graphics.Drawables
 {
-    class Box : Drawable
+    public class Box : Drawable
     {
+        
     }
 }

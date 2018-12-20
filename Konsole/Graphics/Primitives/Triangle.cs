@@ -7,9 +7,9 @@ namespace Konsole.Graphics.Primitives
 {
     public class Triangle
     {
-        public Vector2<int> A;
-        public Vector2<int> B;
-        public Vector2<int> C;
+        public Vector2 A;
+        public Vector2 B;
+        public Vector2 C;
 
 
     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Konsole;
+using Konsole.Graphics.Colour;
 
 namespace ConsoleApp1
 {
@@ -8,8 +9,8 @@ namespace ConsoleApp1
     {
         static void Main()
         {
-            var window = new KonsoleWindow(30, 30);           
-            window.Start();
+            var window = new KonsoleWindow(50, 50);
+            window.Start();           
             Console.ReadLine();
         }
 

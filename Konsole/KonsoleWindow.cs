@@ -32,7 +32,7 @@ namespace Konsole
         [DllImport("kernel32.dll")]
         public static extern uint GetLastError();
 
-        static void EnableWindowsColour()
+        public void EnableWindowsColour()
         {
             var iStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
             if (!GetConsoleMode(iStdOut, out uint outConsoleMode))
@@ -85,13 +85,12 @@ namespace Konsole
             Retry:
 
             try
-            {
-               
+            {              
                 Console.SetWindowSize(X, Y);
             } 
             catch (ArgumentOutOfRangeException)
             {
-                Console.WriteLine("The current game requires the screen to be larger or the font to be smaller, please change the font size and try again by inputting \"Retry\" into the console█");
+                Console.WriteLine("The current game requires the screen to be larger or the font to be smaller, please change the font size and try again by inputting \"Retry\" into the console");
                 ReadAgain:
                 string input = Console.ReadLine();
                 if (input == "Retry")
@@ -104,9 +103,10 @@ namespace Konsole
         }
         public void Start()
         {
+            Console.Clear();
             var buffer = new KonsoleBuffer(new Vector2<int>(X, Y));
             EnableWindowsColour();
-            buffer.RenderBuffer();
+            buffer.RenderBuffer();            
             buffer.PushToConsole();
         }
 

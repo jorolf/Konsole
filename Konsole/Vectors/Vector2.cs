@@ -29,6 +29,5 @@ namespace Konsole.Vectors
         {
             return new Vector2<int>(index % bounds.X, index / bounds.X);
         }
-           
     }
 }

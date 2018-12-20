@@ -1,4 +1,5 @@
 ﻿using Konsole.Graphics.Colour;
+using Konsole.Graphics.Containers;
 using Konsole.Graphics.Drawables;
 using Konsole.Vectors;
 using System;
@@ -13,32 +14,37 @@ namespace Konsole.Graphics
 
         public Vector2<int> Size;
         public GridChar[] Grid;
-        public Drawable[] Drawables = new Drawable[]
+        public List<Drawable> Drawables = new List<Drawable>()
         {
-            new Box()
+            new Container()
             {
-                Position = (Vector2<int>)6,
-                Size = (Vector2<int>)15,
-                Fill = '█',
-                FillColour = KonsoleColour.Yellow
-            },
-            new Box()
-            {
-                Position = (Vector2<int>)5,
-                Size = (Vector2<int>)10,
-                Fill = 'X',
-                FillColour = KonsoleColour.Red
-            },
-            new Box()
-            {
-                Position = (Vector2<int>)4,
-                Size = (Vector2<int>)6,
-                Fill = 'O',
-                FillColour = KonsoleColour.White
+                Position = new Vector2<int>(10, 0),
+                //Size = (Vector2<int>)6,
+                //Colour = KonsoleColour.Green,
+                //Fill = '█'
+                Children = new List<Drawable>()
+                {
+                    new Container()
+                    {
+                        Position = (Vector2<int>)3,
+                        //Size = new Vector2<int>(6, 3),
+                        //Colour = KonsoleColour.Green,
+                        //Fill = '█'
+                        Children = new List<Drawable>()
+                        {
+                            new Box()
+                            {
+                                Size = (Vector2<int>)10,
+                                Colour = KonsoleColour.Green,
+                                Fill = '█'
+                            }
+                        }
+                    }
+                }
+
             }
-
         };
-
+        private List<Drawable> draw = new List<Drawable>();
         
         public KonsoleBuffer(Vector2<int> size)
         {
@@ -54,20 +60,26 @@ namespace Konsole.Graphics
         
         public void RenderBuffer()
         {
-            foreach (Box drawable in Drawables)
+            foreach (Drawable drawable in Drawables)
             {
-                foreach (GridChar gridChar in Grid)
+                if (drawable is Container)
                 {
-                    if (gridChar.Position.X >= drawable.Position.X && gridChar.Position.X < drawable.Position.X + drawable.Size.X)
+                    foreach (Drawable d in (drawable as Container).GetChildren())
                     {
-                        if (gridChar.Position.Y >= drawable.Position.Y && gridChar.Position.Y < drawable.Position.Y + drawable.Size.Y)
+                        foreach (GridChar gridChar in Grid)
                         {
-                            gridChar.Char = drawable.Fill;
-                            gridChar.BackgroundColour = gridChar.ForegroundColour;
-                            gridChar.ForegroundColour = drawable.FillColour;
+                            if (gridChar.Position.X >= d.Position.X && gridChar.Position.X < d.Position.X + d.Size.X)
+                            {
+                                if (gridChar.Position.Y >= d.Position.Y && gridChar.Position.Y < d.Position.Y + d.Size.Y)
+                                {
+                                    gridChar.Char = d.Fill;
+                                    gridChar.BackgroundColour = gridChar.ForegroundColour;
+                                    gridChar.ForegroundColour = d.Colour;
+                                }
+                            }
                         }
                     }
-                }
+                }                
             }
         }
 
@@ -81,6 +93,7 @@ namespace Konsole.Graphics
                     buffer.Append(gridItem.Char);                
                 else
                 {
+                    buffer.Append("\u001b[0m");
                     buffer.Append(gridItem.BackgroundColour.ToBackgroundColour());
                     buffer.Append(gridItem.ForegroundColour.ToForegroundColour());
                     buffer.Append(gridItem.Char);

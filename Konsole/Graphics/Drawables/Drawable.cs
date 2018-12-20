@@ -1,28 +1,27 @@
-﻿using Konsole.Graphics.Colour;
-using Konsole.Vectors;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Konsole.Graphics.Colour;
+using Konsole.Vectors;
 
 namespace Konsole.Graphics.Drawables
 {
-    public abstract class Drawable
+    public abstract class Drawable : IDrawable
     {
+        public Vector2 DrawSize { get; }
+        public Vector2<int> Position { get; set; } = (Vector2<int>)0;
+        public Vector2<int> Size { get; set; } = (Vector2<int>)0;
         /// <summary>
-        /// The positional offset.
-        /// </summary>
-        public Vector2<int> Position;
-        /// <summary>
-        /// The size of this Drawable.
-        /// </summary>
-        public Vector2<int> Size;
-        /// <summary>
-        /// The character that should be used to fill this Drawable's surface.
-        /// </summary>
-        public char Fill = '█';
-        /// <summary>
-        /// The colour used to set the <see cref="Console.ForegroundColor"/>
-        /// </summary>
-        public KonsoleColour FillColour;        
+        /// The character that should be used to draw this <see cref="Drawable"/>
+        /// </summary>  
+        public char Fill = ' ';
+        public KonsoleColour Colour { get; set; }
+        public enum LoadState
+        {
+            Unloaded,
+            Loading,
+            Ready,
+            Loaded
+        }
     }
 }
