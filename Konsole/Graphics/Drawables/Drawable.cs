@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Konsole.Graphics.Colour;
 using Konsole.Vectors;
+using Konsole.Graphics.Enums;
 
 namespace Konsole.Graphics.Drawables
 {
@@ -23,5 +24,7 @@ namespace Konsole.Graphics.Drawables
             Ready,
             Loaded
         }
+        public Axes RelativeScale { get; set; }
+        public Anchor Anchor { get; set; } = Anchor.TopLeft;
     }
 }

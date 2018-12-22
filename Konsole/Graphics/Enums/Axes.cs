@@ -1,4 +1,4 @@
-﻿namespace Konsole.Axes
+﻿namespace Konsole.Graphics.Enums
 {
     public enum Axes
     {

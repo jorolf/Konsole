@@ -87,6 +87,7 @@ namespace Konsole
             try
             {              
                 Console.SetWindowSize(X, Y);
+                Console.SetBufferSize(X, Y);
             } 
             catch (ArgumentOutOfRangeException)
             {

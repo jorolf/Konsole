@@ -1,4 +1,4 @@
-﻿namespace Konsole.Anchors
+﻿namespace Konsole.Graphics.Enums
 {
     public enum Anchor
     {

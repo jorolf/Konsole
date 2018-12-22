@@ -1,4 +1,5 @@
 ﻿using Konsole.Graphics.Drawables;
+using Konsole.Graphics.Enums;
 using Konsole.Vectors;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace Konsole.Graphics.Containers
     {      
         public List<Drawable> Children { get; set; }
 
-        private List<Drawable> DrawableTree = new List<Drawable>();
+        List<Drawable> DrawableTree = new List<Drawable>();
 
         public List<Drawable> GetChildren()
         {
@@ -20,15 +21,59 @@ namespace Konsole.Graphics.Containers
                 {
                     if (child is Container)
                     {
-                        child.Position.X += Position.X;
-                        child.Position.Y += Position.Y;
+                        SetProperties();
                         DrawableTree.AddRange((child as Container).GetChildren());
                     }
                     else
                     {
-                        child.Position.X += Position.X;
-                        child.Position.Y += Position.Y;
+                        SetProperties();
                         DrawableTree.Add(child);
+                    }
+                    void SetProperties()
+                    {
+                        
+                        switch (child.Anchor)
+                        {
+                            default:
+                                child.Position.X += Position.X;
+                                child.Position.Y += Position.Y;
+                                break;
+                            case Anchor.TopCentre:
+                                child.Position.X += Position.X + Size.X / 2 - child.Size.X / 2;
+                                child.Position.Y += Position.Y;
+                                break;
+                            case Anchor.TopRight:
+                                child.Position.X += Position.X + Size.X - child.Size.X;
+                                child.Position.Y += Position.Y;
+                                break;
+                            case Anchor.Left:
+                                child.Position.X += Position.X;
+                                child.Position.Y += Position.Y + Size.Y / 2 - child.Size.Y / 2;
+                                break;
+                            case Anchor.Centre:
+                                child.Position.X += Position.X + Size.X / 2 - child.Size.X / 2;
+                                child.Position.Y += Position.Y + Size.Y / 2 - child.Size.Y / 2;
+                                break;
+                            case Anchor.Right:
+                                child.Position.X += Position.X + Size.X - child.Size.X;
+                                child.Position.Y += Position.Y + Size.Y / 2 - child.Size.Y / 2;
+                                break;
+                            case Anchor.BottomLeft:
+                                child.Position.X += Position.X;
+                                child.Position.Y += Position.Y + Size.Y - child.Size.Y;
+                                break;
+                            case Anchor.BottomCentre:
+                                child.Position.X += Position.X + Size.X / 2 - child.Size.X / 2;
+                                child.Position.Y += Position.Y + Size.Y - child.Size.Y;
+                                break;
+                            case Anchor.BottomRight:
+                                child.Position.X += Position.X + Size.X - child.Size.X;
+                                child.Position.Y += Position.Y + Size.Y - child.Size.Y;
+                                break;
+                        }
+                        
+                        //child.Position.X += Position.X;
+                        //child.Position.Y += Position.Y;
                     }
                 }
                 return DrawableTree;

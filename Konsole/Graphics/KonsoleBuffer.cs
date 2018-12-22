@@ -1,6 +1,7 @@
 ﻿using Konsole.Graphics.Colour;
 using Konsole.Graphics.Containers;
 using Konsole.Graphics.Drawables;
+using Konsole.Graphics.Enums;
 using Konsole.Vectors;
 using System;
 using System.Collections.Generic;
@@ -18,27 +19,24 @@ namespace Konsole.Graphics
         {
             new Container()
             {
-                Position = new Vector2<int>(10, 0),
-                //Size = (Vector2<int>)6,
+                Position = new Vector2<int>(10, 2),
+                Size = (Vector2<int>)12,
                 //Colour = KonsoleColour.Green,
-                //Fill = '█'
+                //Fill = '█',
                 Children = new List<Drawable>()
                 {
-                    new Container()
+                    new Box()
                     {
-                        Position = (Vector2<int>)3,
-                        //Size = new Vector2<int>(6, 3),
-                        //Colour = KonsoleColour.Green,
-                        //Fill = '█'
-                        Children = new List<Drawable>()
-                        {
-                            new Box()
-                            {
-                                Size = (Vector2<int>)10,
-                                Colour = KonsoleColour.Green,
-                                Fill = '█'
-                            }
-                        }
+                        Size = (Vector2<int>)12,
+                        Colour = KonsoleColour.Green,
+                        Fill = '█',
+                    },
+                    new Box()
+                    {
+                        Anchor = Anchor.Centre,
+                        Size = (Vector2<int>)4,
+                        Fill = '█',
+                        Colour = KonsoleColour.Blue
                     }
                 }
 
@@ -89,14 +87,16 @@ namespace Konsole.Graphics
             KonsoleColour foregroundBuffer = KonsoleColour.Black;
             foreach (GridChar gridItem in Grid)
             {
-                if (backgroundBuffer == gridItem.BackgroundColour && foregroundBuffer == gridItem.ForegroundColour)                
-                    buffer.Append(gridItem.Char);                
+                if (backgroundBuffer == gridItem.BackgroundColour && foregroundBuffer == gridItem.ForegroundColour)               
+                    buffer.Append(gridItem.Char);
                 else
                 {
                     buffer.Append("\u001b[0m");
                     buffer.Append(gridItem.BackgroundColour.ToBackgroundColour());
                     buffer.Append(gridItem.ForegroundColour.ToForegroundColour());
                     buffer.Append(gridItem.Char);
+                    backgroundBuffer = gridItem.BackgroundColour;
+                    foregroundBuffer = gridItem.ForegroundColour;
                 }
             }
             Console.Write(buffer);

@@ -3,14 +3,14 @@ using System.Threading.Tasks;
 using Konsole;
 using Konsole.Graphics.Colour;
 
-namespace ConsoleApp1
+namespace TestApp
 {
     class Program
     {
         static void Main()
         {
             var window = new KonsoleWindow(50, 50);
-            window.Start();           
+            window.Start();            
             Console.ReadLine();
         }
 
