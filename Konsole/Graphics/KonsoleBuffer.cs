@@ -19,22 +19,31 @@ namespace Konsole.Graphics
         {
             new Container()
             {
-                Position = new Vector2<int>(10, 2),
-                Size = (Vector2<int>)12,
+                Position = new Vector2<int>(10, 20),
+                Size = (Vector2<int>)18,
                 //Colour = KonsoleColour.Green,
                 //Fill = '█',
                 Children = new List<Drawable>()
                 {
                     new Box()
                     {
-                        Size = (Vector2<int>)12,
+                        RelativeSize = Axes.Both,
                         Colour = KonsoleColour.Green,
                         Fill = '█',
                     },
                     new Box()
                     {
+                        RelativeSize = Axes.X,
                         Anchor = Anchor.Centre,
-                        Size = (Vector2<int>)4,
+                        Size = new Vector2<int>(1,2),
+                        Fill = '█',
+                        Colour = KonsoleColour.Red
+                    },
+                    new Box()
+                    {
+                        RelativeSize = Axes.Y,
+                        Anchor = Anchor.Centre,
+                        Size = new Vector2<int>(4,2),
                         Fill = '█',
                         Colour = KonsoleColour.Blue
                     }
@@ -66,9 +75,9 @@ namespace Konsole.Graphics
                     {
                         foreach (GridChar gridChar in Grid)
                         {
-                            if (gridChar.Position.X >= d.Position.X && gridChar.Position.X < d.Position.X + d.Size.X)
+                            if (gridChar.Position.X >= d.Position.X && gridChar.Position.X < d.Position.X + d.DrawSize.X)
                             {
-                                if (gridChar.Position.Y >= d.Position.Y && gridChar.Position.Y < d.Position.Y + d.Size.Y)
+                                if (gridChar.Position.Y >= d.Position.Y && gridChar.Position.Y < d.Position.Y + d.DrawSize.Y)
                                 {
                                     gridChar.Char = d.Fill;
                                     gridChar.BackgroundColour = gridChar.ForegroundColour;

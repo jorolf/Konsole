@@ -8,7 +8,7 @@ namespace Konsole.Graphics.Drawables
 {
     public interface IDrawable
     {
-        Vector2 DrawSize { get; }
+        Vector2<int> DrawSize { get; }
         /// <summary>
         /// The positional offset.
         /// </summary>

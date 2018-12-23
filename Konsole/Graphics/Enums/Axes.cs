@@ -2,9 +2,10 @@
 {
     public enum Axes
     {
+        None,
         X,
         Y,
-        Both,
-        None
+        Both
+        
     }
 }

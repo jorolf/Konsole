@@ -31,6 +31,24 @@ namespace Konsole.Graphics.Containers
                     }
                     void SetProperties()
                     {
+                        switch (child.RelativeSize)
+                        {
+                            default:
+                                child.DrawSize = child.Size;
+                                break;
+                            case Axes.X:
+                                child.DrawSize.X = Size.X * child.Size.X;
+                                child.DrawSize.Y = child.Size.Y;
+                                break;
+                            case Axes.Y:
+                                child.DrawSize.X = child.Size.X;
+                                child.DrawSize.Y = Size.Y * child.Size.Y;
+                                break;
+                            case Axes.Both:
+                                child.DrawSize.X = Size.X * child.Size.X;
+                                child.DrawSize.Y = Size.Y * child.Size.Y;
+                                break;
+                        }
                         
                         switch (child.Anchor)
                         {
@@ -39,41 +57,38 @@ namespace Konsole.Graphics.Containers
                                 child.Position.Y += Position.Y;
                                 break;
                             case Anchor.TopCentre:
-                                child.Position.X += Position.X + Size.X / 2 - child.Size.X / 2;
+                                child.Position.X += Position.X + Size.X / 2 - child.DrawSize.X / 2;
                                 child.Position.Y += Position.Y;
                                 break;
                             case Anchor.TopRight:
-                                child.Position.X += Position.X + Size.X - child.Size.X;
+                                child.Position.X += Position.X + Size.X - child.DrawSize.X;
                                 child.Position.Y += Position.Y;
                                 break;
                             case Anchor.Left:
                                 child.Position.X += Position.X;
-                                child.Position.Y += Position.Y + Size.Y / 2 - child.Size.Y / 2;
+                                child.Position.Y += Position.Y + Size.Y / 2 - child.DrawSize.Y / 2;
                                 break;
                             case Anchor.Centre:
-                                child.Position.X += Position.X + Size.X / 2 - child.Size.X / 2;
-                                child.Position.Y += Position.Y + Size.Y / 2 - child.Size.Y / 2;
+                                child.Position.X += Position.X + Size.X / 2 - child.DrawSize.X / 2;
+                                child.Position.Y += Position.Y + Size.Y / 2 - child.DrawSize.Y / 2;
                                 break;
                             case Anchor.Right:
-                                child.Position.X += Position.X + Size.X - child.Size.X;
-                                child.Position.Y += Position.Y + Size.Y / 2 - child.Size.Y / 2;
+                                child.Position.X += Position.X + Size.X - child.DrawSize.X;
+                                child.Position.Y += Position.Y + Size.Y / 2 - child.DrawSize.Y / 2;
                                 break;
                             case Anchor.BottomLeft:
                                 child.Position.X += Position.X;
-                                child.Position.Y += Position.Y + Size.Y - child.Size.Y;
+                                child.Position.Y += Position.Y + Size.Y - child.DrawSize.Y;
                                 break;
                             case Anchor.BottomCentre:
-                                child.Position.X += Position.X + Size.X / 2 - child.Size.X / 2;
-                                child.Position.Y += Position.Y + Size.Y - child.Size.Y;
+                                child.Position.X += Position.X + Size.X / 2 - child.DrawSize.X / 2;
+                                child.Position.Y += Position.Y + Size.Y - child.DrawSize.Y;
                                 break;
                             case Anchor.BottomRight:
-                                child.Position.X += Position.X + Size.X - child.Size.X;
-                                child.Position.Y += Position.Y + Size.Y - child.Size.Y;
+                                child.Position.X += Position.X + Size.X - child.DrawSize.X;
+                                child.Position.Y += Position.Y + Size.Y - child.DrawSize.Y;
                                 break;
-                        }
-                        
-                        //child.Position.X += Position.X;
-                        //child.Position.Y += Position.Y;
+                        }                   
                     }
                 }
                 return DrawableTree;
