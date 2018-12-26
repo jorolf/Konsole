@@ -7,10 +7,17 @@ using System.Text;
 
 namespace Konsole.Graphics.Containers
 {
+    /// <summary>
+    /// A <see cref="Drawable"/> that contains other Drawables, please note that Containers themselves aren't drawn, only their content is.
+    /// </summary>
     public class Container : Drawable, IContainer
     {      
-        public List<Drawable> Children { get; set; }
+        public IList<Drawable> Children { get; set; }
 
+        public Container()
+        {
+            Children = new List<Drawable>();
+        }
         List<Drawable> DrawableTree = new List<Drawable>();
 
         public List<Drawable> GetChildren()

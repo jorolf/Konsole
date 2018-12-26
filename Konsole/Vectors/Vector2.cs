@@ -25,9 +25,9 @@ namespace Konsole.Vectors
         {
             return new Vector2<T>(x, x);
         }
-        public static Vector2<int> ToVector2(int index, Vector2<int> bounds)
+        public static Vector2<int> From1DArray(int index, int boundary)
         {
-            return new Vector2<int>(index % bounds.X, index / bounds.X);
+            return new Vector2<int>(index % boundary, index / boundary);
         }
     }
 }

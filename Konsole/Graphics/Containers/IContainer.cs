@@ -7,6 +7,6 @@ namespace Konsole.Graphics.Containers
 {
     public interface IContainer
     {
-        List<Drawable> Children { get; set; }
+        IList<Drawable> Children { get; set; }
     }
 }

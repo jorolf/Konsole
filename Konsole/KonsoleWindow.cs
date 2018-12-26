@@ -51,7 +51,7 @@ namespace Konsole
             }
         }
         #endregion
-        
+        public KonsoleBuffer buffer = new KonsoleBuffer();
         public int X;
         public int Y;
         public float RefreshRate;
@@ -78,12 +78,7 @@ namespace Konsole
         }
         private void setSize()
         {
-            if (Console.LargestWindowWidth < X || Console.LargestWindowHeight < Y)
-            {            
-
-            }
             Retry:
-
             try
             {              
                 Console.SetWindowSize(X, Y);
@@ -97,16 +92,15 @@ namespace Konsole
                 if (input == "Retry")
                     goto Retry;
                 else
-                    goto ReadAgain;
-                
-                
+                    goto ReadAgain;                            
             }           
         }
         public void Start()
         {
             Console.Clear();
-            var buffer = new KonsoleBuffer(new Vector2<int>(X, Y));
+            buffer.Size = new Vector2<int>(X, Y);
             EnableWindowsColour();
+            buffer.GenerateGrid();
             buffer.RenderBuffer();            
             buffer.PushToConsole();
         }

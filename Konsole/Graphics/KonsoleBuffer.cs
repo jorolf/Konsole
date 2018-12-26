@@ -15,51 +15,15 @@ namespace Konsole.Graphics
 
         public Vector2<int> Size;
         public GridChar[] Grid;
-        public List<Drawable> Drawables = new List<Drawable>()
-        {
-            new Container()
-            {
-                Position = new Vector2<int>(10, 20),
-                Size = (Vector2<int>)18,
-                //Colour = KonsoleColour.Green,
-                //Fill = '█',
-                Children = new List<Drawable>()
-                {
-                    new Box()
-                    {
-                        RelativeSize = Axes.Both,
-                        Colour = KonsoleColour.Green,
-                        Fill = '█',
-                    },
-                    new Box()
-                    {
-                        RelativeSize = Axes.X,
-                        Anchor = Anchor.Centre,
-                        Size = new Vector2<int>(1,2),
-                        Fill = '█',
-                        Colour = KonsoleColour.Red
-                    },
-                    new Box()
-                    {
-                        RelativeSize = Axes.Y,
-                        Anchor = Anchor.Centre,
-                        Size = new Vector2<int>(4,2),
-                        Fill = '█',
-                        Colour = KonsoleColour.Blue
-                    }
-                }
-
-            }
-        };
-        private List<Drawable> draw = new List<Drawable>();
+        public List<Drawable> Drawables = new List<Drawable>();
         
-        public KonsoleBuffer(Vector2<int> size)
+        
+        public void GenerateGrid()
         {
-            Size = size;
             List<GridChar> grid = new List<GridChar>();
             for (int i = 0; i <= (Size.X * Size.Y); i++)
             {
-                var vec = Vector2<int>.ToVector2(i, Size);
+                var vec = Vector2<int>.From1DArray(i, Size.Y);
                 grid.Add(new GridChar(vec));
             }
             Grid = grid.ToArray();
@@ -92,8 +56,8 @@ namespace Konsole.Graphics
 
         public void PushToConsole()
         {
-            KonsoleColour backgroundBuffer = KonsoleColour.Black;
-            KonsoleColour foregroundBuffer = KonsoleColour.Black;
+            KonsoleColour backgroundBuffer = KonsoleColour.Transparent;
+            KonsoleColour foregroundBuffer = KonsoleColour.Transparent;
             foreach (GridChar gridItem in Grid)
             {
                 if (backgroundBuffer == gridItem.BackgroundColour && foregroundBuffer == gridItem.ForegroundColour)               

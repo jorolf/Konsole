@@ -6,6 +6,7 @@ namespace Konsole.Graphics.Colour
 {
     public enum KonsoleColour
     {
+        Transparent,
         Black,
         //DarkGrey,
         //LightGrey,
