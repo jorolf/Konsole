@@ -43,9 +43,12 @@ namespace Konsole.Graphics
                             {
                                 if (gridChar.Position.Y >= d.Position.Y && gridChar.Position.Y < d.Position.Y + d.DrawSize.Y)
                                 {
-                                    gridChar.Char = d.Fill;
-                                    gridChar.BackgroundColour = gridChar.ForegroundColour;
-                                    gridChar.ForegroundColour = d.Colour;
+                                    if (d.Colour != KonsoleColour.Transparent)
+                                    {
+                                        gridChar.Char = d.Fill;
+                                        gridChar.BackgroundColour = gridChar.ForegroundColour;
+                                        gridChar.ForegroundColour = d.Colour;
+                                    }
                                 }
                             }
                         }
@@ -59,7 +62,7 @@ namespace Konsole.Graphics
             KonsoleColour backgroundBuffer = KonsoleColour.Transparent;
             KonsoleColour foregroundBuffer = KonsoleColour.Transparent;
             foreach (GridChar gridItem in Grid)
-            {
+            {  
                 if (backgroundBuffer == gridItem.BackgroundColour && foregroundBuffer == gridItem.ForegroundColour)               
                     buffer.Append(gridItem.Char);
                 else

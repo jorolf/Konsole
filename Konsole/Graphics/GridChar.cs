@@ -10,8 +10,8 @@ namespace Konsole.Graphics
     {
         public Vector2<int> Position;
         public char Char = ' ';
-        public KonsoleColour BackgroundColour = KonsoleColour.Black;
-        public KonsoleColour ForegroundColour = KonsoleColour.Black;
+        public KonsoleColour BackgroundColour = KonsoleColour.Transparent;
+        public KonsoleColour ForegroundColour = KonsoleColour.Transparent;
 
         public GridChar(Vector2<int> position)
         {
