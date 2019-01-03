@@ -23,23 +23,23 @@ namespace TestApp
                 new Box()
                 {
                     RelativeSize = Axes.Both,
-                    Colour = KonsoleColour.Green,
+                    Colour = KonsoleColour.LightGreen,
                     Fill = '█',
                 },
                 new Box()
                 {
                     RelativeSize = Axes.X,
                     Anchor = Anchor.Centre,
-                    Size = new Vector2<int>(1,2),
-                    Fill = '█',
-                    Colour = KonsoleColour.Red
+                    Size = new Vector2<int>(2,2),
+                    Fill = 'X',
+                    Colour = KonsoleColour.LightBlue
                 },
                 new Box()
                 {
                     RelativeSize = Axes.Y,
                     Anchor = Anchor.Centre,
                     Size = new Vector2<int>(4,2),
-                    Fill = '█',
+                    Fill = 'O',
                     Colour = KonsoleColour.Blue
                 }
             };

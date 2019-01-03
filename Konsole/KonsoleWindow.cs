@@ -10,28 +10,14 @@ namespace Konsole
     {
         private readonly PlatformID OS = Environment.OSVersion.Platform;       
         public KonsoleBuffer buffer = new KonsoleBuffer();
-        public int X;
-        public int Y;
-        public float RefreshRate;
+        public Vector2<int> Size { get; set; } = (Vector2<int>)0;
+        float RefreshRate { get; set; }
         
-
-        public KonsoleWindow(int x, int y, bool square = false)
-        {
-            if (square)
-                X = x * 2;
-            else
-                X = x;
-            Y = y;
-            RefreshRate = 60;
-            setSize();
-        }
-        public KonsoleWindow(int size, bool square = false)
-        {
-            if (square)
-                X = size * 2;
-            else
-                X = size;
-            Y = size;
+      
+        public KonsoleWindow(Vector2<int> size)
+        {          
+            Size.X = size.X;
+            Size.Y = size.Y;
             RefreshRate = 60;
             setSize();
         }
@@ -40,8 +26,8 @@ namespace Konsole
             Retry:
             try
             {              
-                Console.SetWindowSize(X, Y);
-                Console.SetBufferSize(X, Y);
+                Console.SetWindowSize(Size.X, Size.Y);
+                Console.SetBufferSize(Size.X, Size.Y);
             } 
             catch (ArgumentOutOfRangeException)
             {
@@ -57,7 +43,7 @@ namespace Konsole
         public void Start()
         {
             Console.Clear();
-            buffer.Size = new Vector2<int>(X, Y);
+            buffer.Size = new Vector2<int>(Size.X, Size.Y);
             if (OS == PlatformID.Win32NT)
                 EnableWindowsColour();
             buffer.GenerateGrid();

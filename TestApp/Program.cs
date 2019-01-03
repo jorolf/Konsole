@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Drawing;
 using Konsole;
 using Konsole.Graphics.Colour;
+using Konsole.Vectors;
 
 namespace TestApp
 {
@@ -10,7 +11,7 @@ namespace TestApp
     {
         static void Main()
         {
-            var window = new KonsoleWindow(50, 50);
+            var window = new KonsoleWindow((Vector2<int>)30);
             window.buffer.Drawables.Add(new TestContainer());
             window.Start();            
             Console.ReadLine();
