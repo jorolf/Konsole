@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Konsole.Graphics.Drawables
+namespace Konsole.Containers
 {
-    public class Box : Drawable
+    public interface IContainer
     {
-        
+
     }
 }
