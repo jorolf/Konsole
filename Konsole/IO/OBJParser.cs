@@ -58,31 +58,31 @@ namespace Konsole.IO
                     nIndex++;
                     temp = null;
                 }
-                else if (t.StartsWith("v"))
+                else if (t.StartsWith("v "))
                 {
                     string[] temp = t.Split(' ');
                     Positions[pIndex] = new Vector3(
                         float.Parse(temp[1]),
-                        float.Parse(temp[2]),
+                        -float.Parse(temp[2]),
                         float.Parse(temp[3]));
                     pIndex++;
                     temp = null;
                 }
 
-                else if (t.StartsWith("f"))
+                else if (t.StartsWith("f "))
                 {
                     string[] Indices = t.Substring(2).Split(new char[] { ' ', '/' });
-                    int[] Temp = new int[9];
-                    for (int i = 0; i < 9; i++)
+                    int[] Temp = new int[6];
+                    for (int i = 0; i < 6; i++)
                     {
                         int.TryParse(Indices[i], out Temp[i]);
                         Temp[i]--;
                     }
 
                     Triangles[fIndex] = new Triangle(
-                        new Vertex(Positions[Temp[0]], Normals[Temp[2]]),
-                        new Vertex(Positions[Temp[3]], Normals[Temp[5]]),
-                        new Vertex(Positions[Temp[6]], Normals[Temp[8]])
+                        new Vertex(Positions[Temp[0]], Vector3.Zero),
+                        new Vertex(Positions[Temp[2]], Vector3.Zero),
+                        new Vertex(Positions[Temp[4]], Vector3.Zero)
                     );
                     fIndex++;
                     Temp = null;
