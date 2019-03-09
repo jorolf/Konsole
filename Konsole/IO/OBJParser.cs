@@ -72,8 +72,8 @@ namespace Konsole.IO
                 else if (t.StartsWith("f "))
                 {
                     string[] Indices = t.Substring(2).Split(new char[] { ' ', '/' });
-                    int[] Temp = new int[6];
-                    for (int i = 0; i < 6; i++)
+                    int[] Temp = new int[9];
+                    for (int i = 0; i < 9; i++)
                     {
                         int.TryParse(Indices[i], out Temp[i]);
                         Temp[i]--;
@@ -81,8 +81,8 @@ namespace Konsole.IO
 
                     Triangles[fIndex] = new Triangle(
                         new Vertex(Positions[Temp[0]], Vector3.Zero),
-                        new Vertex(Positions[Temp[2]], Vector3.Zero),
-                        new Vertex(Positions[Temp[4]], Vector3.Zero)
+                        new Vertex(Positions[Temp[3]], Vector3.Zero),
+                        new Vertex(Positions[Temp[6]], Vector3.Zero)
                     );
                     fIndex++;
                     Temp = null;

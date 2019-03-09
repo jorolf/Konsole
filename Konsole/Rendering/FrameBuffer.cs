@@ -18,13 +18,17 @@ namespace Konsole
 
         List<Drawable> drawables = new List<Drawable>();
 
+        int width, height;
+
         public FrameBuffer(int Width, int Height)
         {
+            width = Width;
+            height = Height;
             Buffer = new Charsel[Height, Width];
             Drawable d = new Drawable();
             d.Mesh = new Mesh();
-            d.Mesh.Triangles = OBJParser.ParseFile("shrek.obj");
-            d.Scale = new Vector3(20);
+            d.Mesh.Triangles = OBJParser.ParseFile("player.obj");
+            d.Scale = new Vector3(25);
             drawables.Add(d);
         }
 
@@ -32,9 +36,10 @@ namespace Konsole
 
         public void Render()
         {
+            output.Clear();
             Console.SetCursorPosition(0, 0);
             time += 0.1f;
-            Buffer = new Charsel[60, 60];
+            Buffer = new Charsel[width, height];
             foreach (Drawable d in drawables)
                 foreach (Triangle t in d.Mesh.Triangles)
                 {
@@ -46,10 +51,11 @@ namespace Konsole
                     pos3 = t.C.Position;
 
                     var m = Matrix4x4.Identity;
-                    m *= Matrix4x4.CreateRotationZ(time);
+                    //m *= Matrix4x4.CreateRotationZ(time);
                     m *= Matrix4x4.CreateRotationY(time);
                     m *= Matrix4x4.CreateScale(d.Scale);
-                    m *= Matrix4x4.CreateTranslation(new Vector3(30, 35, 0));
+                    m *= Matrix4x4.CreateScale(new Vector3(2f, 1, 1));
+                    m *= Matrix4x4.CreateTranslation(new Vector3(80, 75, 0));
 
                     pos1 = Vector3.Transform(pos1, m);
                     pos2 = Vector3.Transform(pos2, m);

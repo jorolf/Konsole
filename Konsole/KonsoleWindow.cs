@@ -20,7 +20,7 @@ namespace Konsole
             while (true)
             {
                 buffer.Render();
-                Thread.Sleep(150);
+                //Thread.Sleep(150);
                 //Console.Beep(440, 5);
             }
         }
