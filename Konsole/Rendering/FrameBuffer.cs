@@ -23,31 +23,41 @@ namespace Konsole
         {
             new DrawableTriangle()
             {
-                Scale = new Vector3(0.2f),
-                Position = new Vector3(0.2f, 0.2f, 0),
+                Scale = new Vector3(40f),
+                Position = new Vector3(4f, 4f, 0),
             }
         };
         public void Render()
         {
-            foreach (Drawable d in drawables)            
-                foreach (Triangle t in d.Mesh.Triangles)               
-                    for (int w = 0; w < Buffer.GetLength(0); w++) 
-                        for (int h = 0; h < Buffer.GetLength(1); h++)
-                        {
-                            float a = Vector3.Dot(t.A.Position * d.Scale + d.Position, new Vector3(w / Buffer.GetLength(0), h / Buffer.GetLength(1), 1f));
-                            float b = Vector3.Dot(t.B.Position * d.Scale + d.Position, new Vector3(w / Buffer.GetLength(0), h / Buffer.GetLength(1), 1f));
-                            float c = Vector3.Dot(t.C.Position * d.Scale + d.Position, new Vector3(w / Buffer.GetLength(0), h / Buffer.GetLength(1), 1f));
-                            if (a >= 0f && b >= 0f && c >= 0f)
-                            {
-                                //Buffer[w, h].Colour = KonsoleColour.White;
-                                Buffer[w, h].Char = '█';
-                            }
-                            else
-                            {
-                                //Buffer[w, h].Colour = KonsoleColour.Black;
-                                Buffer[w, h].Char = ' ';
-                            }
-                        }
+            foreach (Drawable d in drawables)
+                foreach (Triangle t in d.Mesh.Triangles)
+                {
+
+                    Vector3 pos1, pos2, pos3;
+
+                    pos1 = t.A.Position * d.Scale + d.Position;
+                    pos2 = t.B.Position * d.Scale + d.Position;
+                    pos3 = t.C.Position * d.Scale + d.Position;
+
+                    const int k = 200;
+                    var ab = pos2 - pos1;
+                    var bc = pos3 - pos2;
+                    var ac = pos3 - pos1;
+
+                    //perimeter
+                    for (int i = 0; i < k; i++)
+                    {
+                        Buffer[(int)pos1.X + (int)(ab.X * i/k), (int)pos1.Y + (int)(ab.Y * i/k)].Char = '█';
+                        Buffer[(int)pos2.X + (int)(bc.X * i/k), (int)pos2.Y + (int)(bc.Y * i/k)].Char = '█';
+                        Buffer[(int)pos1.X + (int)(ac.X * i/k), (int)pos1.Y + (int)(ac.Y * i/k)].Char = '█';
+                    }
+
+                    //fill
+
+                    Buffer[(uint)pos1.X, (uint)pos1.Y].Char = '%';
+                    Buffer[(uint)pos2.X, (uint)pos2.Y].Char = '%';
+                    Buffer[(uint)pos3.X, (uint)pos3.Y].Char = '%';
+                }
             foreach (Charsel c in Buffer)
             {
                 output.Append(c.Char);
