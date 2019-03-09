@@ -17,13 +17,13 @@ namespace Konsole
 
         public FrameBuffer(int Width, int Height)
         {
-            Buffer = new Charsel[Width, Height];
+            Buffer = new Charsel[Height, Width];
         }
         Drawable[] drawables = new Drawable[]
         {
             new DrawableTriangle()
             {
-                Scale = new Vector3(40f),
+                Scale = new Vector3(1f),
                 Position = new Vector3(4f, 4f, 0),
             }
         };
@@ -47,16 +47,41 @@ namespace Konsole
                     //perimeter
                     for (int i = 0; i < k; i++)
                     {
-                        Buffer[(int)pos1.X + (int)(ab.X * i/k), (int)pos1.Y + (int)(ab.Y * i/k)].Char = '█';
-                        Buffer[(int)pos2.X + (int)(bc.X * i/k), (int)pos2.Y + (int)(bc.Y * i/k)].Char = '█';
-                        Buffer[(int)pos1.X + (int)(ac.X * i/k), (int)pos1.Y + (int)(ac.Y * i/k)].Char = '█';
+                        Buffer[(int)pos1.Y + (int)(ab.Y * i/k), (int)pos1.X + (int)(ab.X * i/k)].Char = '█';
+                        Buffer[(int)pos2.Y + (int)(bc.Y * i/k), (int)pos2.X + (int)(bc.X * i/k)].Char = '█';
+                        Buffer[(int)pos1.Y + (int)(ac.Y * i/k), (int)pos1.X + (int)(ac.X * i / k)].Char = '█';
                     }
 
                     //fill
 
-                    Buffer[(uint)pos1.X, (uint)pos1.Y].Char = '%';
-                    Buffer[(uint)pos2.X, (uint)pos2.Y].Char = '%';
-                    Buffer[(uint)pos3.X, (uint)pos3.Y].Char = '%';
+                    for (int y = 0; y < Buffer.GetLength(0); y++)
+                    {
+                        int x = 0;
+                        bool found = false;
+                        while (x < Buffer.GetLength(1) - 1)
+                        {
+                            found = Buffer[y, x].Char == '█';
+                            if (found)
+                                break;
+                            x++;
+                        }
+                        if (found)
+                        {
+                            while (x < Buffer.GetLength(1) - 1)
+                            {
+                                Buffer[y, x].Char = '█';
+                                x++;
+                                found = Buffer[y, x].Char == '█';
+                                if(found)
+                                    break;
+                            }
+                        }
+
+                    }
+
+                    //Buffer[(uint)pos1.X, (uint)pos1.Y].Char = '%';
+                    //Buffer[(uint)pos2.X, (uint)pos2.Y].Char = '%';
+                    //Buffer[(uint)pos3.X, (uint)pos3.Y].Char = '%';
                 }
             foreach (Charsel c in Buffer)
             {
