@@ -8,7 +8,6 @@ namespace Konsole.Drawables
 {
     public class Mesh
     {
-        public Vector3[] Verticies;
-        public int[] Indices;
+        public Triangle[] Triangles;
     }
 }

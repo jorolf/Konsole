@@ -10,7 +10,7 @@ namespace Konsole.Rendering
     /// </summary>
     public struct Charsel
     {
-        KonsoleColour Colour;
-        char Char;
+        public KonsoleColour Colour;
+        public char Char;
     }
 }

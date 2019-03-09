@@ -15,4 +15,8 @@
     <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Konsole\Konsole.csproj" />
+  </ItemGroup>
+
 </Project>

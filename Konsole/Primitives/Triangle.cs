@@ -7,11 +7,11 @@ namespace Konsole.Primitives
 {
     public struct Triangle
     {
-        private Vector3 A;
-        private Vector3 B;
-        private Vector3 C;
+        public Vertex A { get; private set; }
+        public Vertex B { get; private set; }
+        public Vertex C { get; private set; }
 
-        public Triangle(Vector3 a, Vector3 b, Vector3 c)
+        public Triangle(Vertex a, Vertex b, Vertex c)
         {
             A = a;
             B = b;
@@ -25,7 +25,7 @@ namespace Konsole.Primitives
         {
             get
             {
-                return Vector3.Cross(B - A, C - A);
+                return Vector3.Cross(B.Position - A.Position, C.Position - A.Position);
             }
         }
     }

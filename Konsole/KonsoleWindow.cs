@@ -6,12 +6,16 @@ namespace Konsole
 {
     public class KonsoleWindow
     {
-        private void StartUp()
+        public int Width { get; private set; }
+        public int Height { get; private set; }
+        private FrameBuffer buffer;
+        public KonsoleWindow(int width, int height)
         {
-            while (true)
-            {
-
-            }
+            Width = width;
+            Height = height;
+            Console.SetWindowSize(Width, Height);
+            buffer = new FrameBuffer(Width, Height);
+            buffer.Render();
         }
     }
 }
