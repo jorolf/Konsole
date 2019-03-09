@@ -4,6 +4,7 @@ using System.Drawing;
 using Konsole.IO;
 using System.IO;
 using Konsole;
+using Konsole.OS;
 
 namespace TestApp
 {
@@ -11,7 +12,8 @@ namespace TestApp
     {
         static void Main()
         {
-            KonsoleWindow window = new KonsoleWindow(60, 30);
+            //Windows.EnableWindowsColour();
+            KonsoleWindow window = new KonsoleWindow(60, 60);
             Console.ReadLine();
         }
 

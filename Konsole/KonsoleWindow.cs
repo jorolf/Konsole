@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 
 namespace Konsole
 {
@@ -16,7 +17,12 @@ namespace Konsole
             Console.SetWindowSize(Width, Height);
             Console.SetBufferSize(Width, Height);
             buffer = new FrameBuffer(Width, Height);
-            buffer.Render();
+            while (true)
+            {
+                buffer.Render();
+                Thread.Sleep(150);
+                //Console.Beep(440, 5);
+            }
         }
     }
 }

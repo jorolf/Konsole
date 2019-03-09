@@ -1,5 +1,6 @@
 ﻿using Konsole.Drawables;
 using Konsole.Graphics.Colour;
+using Konsole.IO;
 using Konsole.OS;
 using Konsole.Primitives;
 using Konsole.Rendering;
@@ -15,29 +16,44 @@ namespace Konsole
         StringBuilder output = new StringBuilder();
         public Charsel[,] Buffer { get; private set; }
 
+        List<Drawable> drawables = new List<Drawable>();
+
         public FrameBuffer(int Width, int Height)
         {
             Buffer = new Charsel[Height, Width];
+            Drawable d = new Drawable();
+            d.Mesh = new Mesh();
+            d.Mesh.Triangles = OBJParser.ParseFile("shrek.obj");
+            d.Scale = new Vector3(20);
+            drawables.Add(d);
         }
-        Drawable[] drawables = new Drawable[]
-        {
-            new DrawableTriangle()
-            {
-                Scale = new Vector3(1f),
-                Position = new Vector3(4f, 4f, 0),
-            }
-        };
+
+        private float time = 0f;
+
         public void Render()
         {
+            Console.SetCursorPosition(0, 0);
+            time += 0.1f;
+            Buffer = new Charsel[60, 60];
             foreach (Drawable d in drawables)
                 foreach (Triangle t in d.Mesh.Triangles)
                 {
 
                     Vector3 pos1, pos2, pos3;
 
-                    pos1 = t.A.Position * d.Scale + d.Position;
-                    pos2 = t.B.Position * d.Scale + d.Position;
-                    pos3 = t.C.Position * d.Scale + d.Position;
+                    pos1 = t.A.Position;
+                    pos2 = t.B.Position;
+                    pos3 = t.C.Position;
+
+                    var m = Matrix4x4.Identity;
+                    m *= Matrix4x4.CreateRotationZ(time);
+                    m *= Matrix4x4.CreateRotationY(time);
+                    m *= Matrix4x4.CreateScale(d.Scale);
+                    m *= Matrix4x4.CreateTranslation(new Vector3(30, 35, 0));
+
+                    pos1 = Vector3.Transform(pos1, m);
+                    pos2 = Vector3.Transform(pos2, m);
+                    pos3 = Vector3.Transform(pos3, m);
 
                     const int k = 200;
                     var ab = pos2 - pos1;
@@ -69,7 +85,7 @@ namespace Konsole
                         {
                             while (x < Buffer.GetLength(1) - 1)
                             {
-                                Buffer[y, x].Char = '█';
+                                //Buffer[y, x].Char = '█';
                                 x++;
                                 found = Buffer[y, x].Char == '█';
                                 if(found)
@@ -87,6 +103,7 @@ namespace Konsole
             {
                 output.Append(c.Char);
             }
+            //output.Append("\u001b[H");
             Console.Write(output);
         }
     }
