@@ -14,6 +14,7 @@ namespace Konsole
             Width = width;
             Height = height;
             Console.SetWindowSize(Width, Height);
+            Console.SetBufferSize(Width, Height);
             buffer = new FrameBuffer(Width, Height);
             buffer.Render();
         }
