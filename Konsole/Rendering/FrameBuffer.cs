@@ -22,8 +22,6 @@ namespace Konsole
 
         private readonly List<Drawable> drawables = new List<Drawable>();
 
-        int width, height;
-
         private bool bufferInvalid;
 
         private int width;
