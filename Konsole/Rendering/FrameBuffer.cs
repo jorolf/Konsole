@@ -160,6 +160,7 @@ namespace Konsole
                 for (var j = 0; j < width; j++)
                 {
                     Charsel c = Buffer[i, j];
+                    c.Colour = Color.FromArgb(255, 255, 255);
                     if (!c.Colour.Equals(prevColour))
                     {
                         output.Append($"\u001b[38;2;{c.Colour.R};{c.Colour.G};{c.Colour.B}m");
