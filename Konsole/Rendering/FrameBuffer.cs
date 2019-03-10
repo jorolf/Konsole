@@ -16,7 +16,7 @@ namespace Konsole
     {
         private readonly StringBuilder output = new StringBuilder();
         public Charsel[,] Buffer { get; private set; }
-        private readonly TextWriter consoleWriter;
+        private readonly Action<string> consoleWriter;
 
         private readonly List<Drawable> drawables = new List<Drawable>();
 
@@ -54,10 +54,10 @@ namespace Konsole
             }
         }
 
-        public FrameBuffer(TextWriter target)
+        public FrameBuffer(Action<string> writeAction)
         {
             bufferInvalid = true;
-            consoleWriter = target;
+            consoleWriter = writeAction;
 
             Drawable d = new Drawable
             {
@@ -81,12 +81,11 @@ namespace Konsole
             if (bufferInvalid)
             {
                 Buffer = new Charsel[Height, Width];
-                consoleWriter.Write("\u001b[?25l");
+                output.Append("\u001b[?25l");
                 viewSpaceMatrix = Matrix4x4.CreateScale(Width, Height, 1);
             }
             else
                 Array.Clear(Buffer, 0, Buffer.Length);
-
 
             foreach (Drawable d in drawables)
             {
@@ -173,7 +172,7 @@ namespace Konsole
                     output.AppendLine();
             }
 
-            consoleWriter.Write(output);
+            consoleWriter(output.ToString());
         }
     }
 }

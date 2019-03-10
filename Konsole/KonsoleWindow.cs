@@ -14,7 +14,7 @@ namespace Konsole
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
                 Windows.EnableWindowsColour();
 
-            buffer = new FrameBuffer(Console.Out);
+            buffer = new FrameBuffer(Console.Write);
 
             while (true)
             {
