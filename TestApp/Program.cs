@@ -13,7 +13,7 @@ namespace TestApp
         static void Main()
         {
             //Windows.EnableWindowsColour();
-            KonsoleWindow window = new KonsoleWindow(160, 160);
+            KonsoleWindow window = new KonsoleWindow();
             Console.ReadLine();
         }
 

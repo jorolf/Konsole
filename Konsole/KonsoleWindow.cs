@@ -1,27 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
+using Konsole.OS;
 
 namespace Konsole
 {
     public class KonsoleWindow
     {
-        public int Width { get; private set; }
-        public int Height { get; private set; }
         private FrameBuffer buffer;
-        public KonsoleWindow(int width, int height)
+        public KonsoleWindow()
         {
-            Width = width;
-            Height = height;
-            Console.SetWindowSize(Width, Height);
-            Console.SetBufferSize(Width, Height);
-            buffer = new FrameBuffer(Width, Height);
+            Console.WriteLine($"Height: {Console.WindowHeight}, Width: {Console.WindowWidth}");
+            Console.WriteLine("Initializing framebuffer & loading objects");
+
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+                Windows.EnableWindowsColour();
+
+            buffer = new FrameBuffer(Console.Out);
+
             while (true)
             {
+                buffer.Width = Console.WindowWidth;
+                buffer.Height = Console.WindowHeight;
                 buffer.Render();
-                //Thread.Sleep(150);
-                //Console.Beep(440, 5);
             }
         }
     }

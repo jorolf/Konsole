@@ -39,7 +39,7 @@ namespace Konsole.OS
                 return;
             }
 
-            outConsoleMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING | DISABLE_NEWLINE_AUTO_RETURN;
+            outConsoleMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
             if (!SetConsoleMode(iStdOut, outConsoleMode))
             {
                 Console.WriteLine($"failed to set output console mode, error code: {GetLastError()}");

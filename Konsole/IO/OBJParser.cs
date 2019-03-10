@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Numerics;
 using System.Text;
@@ -31,9 +32,9 @@ namespace Konsole.IO
                     nIndex++;
                 else if (t.StartsWith("f"))
                     fIndex++;
-                
+
             }
-            
+
             Vector3[] Positions = new Vector3[pIndex];
             Vector3[] Normals = new Vector3[nIndex];
             Triangle[] Triangles = new Triangle[fIndex];
@@ -52,9 +53,9 @@ namespace Konsole.IO
                 {
                     string[] temp = t.Split(' ');
                     Normals[nIndex] = new Vector3(
-                        float.Parse(temp[1]),
-                        float.Parse(temp[2]),
-                        float.Parse(temp[3]));
+                        float.Parse(temp[1], CultureInfo.InvariantCulture),
+                        float.Parse(temp[2], CultureInfo.InvariantCulture),
+                        float.Parse(temp[3], CultureInfo.InvariantCulture));
                     nIndex++;
                     temp = null;
                 }
@@ -62,9 +63,9 @@ namespace Konsole.IO
                 {
                     string[] temp = t.Split(' ');
                     Positions[pIndex] = new Vector3(
-                        float.Parse(temp[1]),
-                        -float.Parse(temp[2]),
-                        float.Parse(temp[3]));
+                        float.Parse(temp[1], CultureInfo.InvariantCulture),
+                        -float.Parse(temp[2], CultureInfo.InvariantCulture),
+                        float.Parse(temp[3], CultureInfo.InvariantCulture));
                     pIndex++;
                     temp = null;
                 }
@@ -73,7 +74,7 @@ namespace Konsole.IO
                 {
                     string[] Indices = t.Substring(2).Split(new char[] { ' ', '/' });
                     int[] Temp = new int[9];
-                    for (int i = 0; i < 9; i++)
+                    for (int i = 0; i < Temp.Length; i++)
                     {
                         int.TryParse(Indices[i], out Temp[i]);
                         Temp[i]--;
@@ -87,10 +88,10 @@ namespace Konsole.IO
                     fIndex++;
                     Temp = null;
                 }
-                
+
             }
             file.Close();
-            //watch.Stop();           
+            //watch.Stop();
             //Console.WriteLine($"Parsing has finished in {watch.ElapsedMilliseconds}");
 
             return Triangles;

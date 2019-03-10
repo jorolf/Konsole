@@ -1,6 +1,7 @@
 ﻿using Konsole.Graphics.Colour;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Text;
 
 namespace Konsole.Rendering
@@ -10,7 +11,7 @@ namespace Konsole.Rendering
     /// </summary>
     public struct Charsel
     {
-        public KonsoleColour Colour;
+        public Color Colour;
         public char Char;
     }
 }
