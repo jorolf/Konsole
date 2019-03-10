@@ -1,13 +1,11 @@
 ﻿using Konsole.Drawables;
-using Konsole.Graphics.Colour;
 using Konsole.IO;
-using Konsole.OS;
 using Konsole.Primitives;
 using Konsole.Rendering;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Numerics;
 using System.Reflection;
 using System.Text;
@@ -22,6 +20,10 @@ namespace Konsole
 
         private readonly List<Drawable> drawables = new List<Drawable>();
 
+        private Matrix4x4 viewSpaceMatrix;
+
+        private const float clipspace_width = 160, clipspace_height = 160;
+        private readonly Matrix4x4 clipSpaceMatrix = Matrix4x4.CreateOrthographic(clipspace_width, clipspace_height, 0.1f, 100f) * Matrix4x4.CreateTranslation(1, 1, 0) * Matrix4x4.CreateScale(0.5f, 0.5f, 1);
         private bool bufferInvalid;
 
         private int width;
@@ -56,23 +58,20 @@ namespace Konsole
         {
             bufferInvalid = true;
             consoleWriter = target;
+
             Drawable d = new Drawable
             {
                 Mesh = new Mesh
                 {
                     Triangles = OBJParser.ParseFile(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar + "player.obj")
-                    /*Triangles = new []
-                    {
-                        new Triangle(new Vertex(Vector3.One, Vector3.Zero), new Vertex(Vector3.One, Vector3.Zero), new Vertex(Vector3.One, Vector3.Zero))
-                    }*/
                 },
-                Scale = new Vector3(25, 25, 1),
-                Position = new Vector3(80, 75, -10),
+                Scale = new Vector3(25, 50, 25),
+                Position = new Vector3(0, 75, 0),
             };
             drawables.Add(d);
         }
 
-        private float time = 0f;
+        private float time;
 
         public void Render()
         {
@@ -83,27 +82,25 @@ namespace Konsole
             {
                 Buffer = new Charsel[Height, Width];
                 consoleWriter.Write("\u001b[?25l");
+                viewSpaceMatrix = Matrix4x4.CreateScale(Width, Height, 1);
             }
             else
                 Array.Clear(Buffer, 0, Buffer.Length);
 
 
             foreach (Drawable d in drawables)
+            {
+                d.Rotation = new Vector3(time, 0, 0);
                 foreach (Triangle t in d.Mesh.Triangles)
                 {
+                    var pos1 = t.A.Position;
+                    var pos2 = t.B.Position;
+                    var pos3 = t.C.Position;
 
-                    Vector3 pos1, pos2, pos3;
+                    var m = d.ModelMatrix;
 
-                    pos1 = t.A.Position;
-                    pos2 = t.B.Position;
-                    pos3 = t.C.Position;
-
-                    var m = Matrix4x4.Identity;
-                    //m *= Matrix4x4.CreateRotationZ(time);
-                    m *= Matrix4x4.CreateRotationY(time);
-                    m *= Matrix4x4.CreateScale(d.Scale);
-                    m *= Matrix4x4.CreateScale(new Vector3(2f, 1, 1));
-                    m *= Matrix4x4.CreateTranslation(new Vector3(80, 75, 0));
+                    m *= clipSpaceMatrix;
+                    m *= viewSpaceMatrix;
 
                     pos1 = Vector3.Transform(pos1, m);
                     pos2 = Vector3.Transform(pos2, m);
@@ -153,15 +150,22 @@ namespace Konsole
                     //Buffer[(uint)pos2.X, (uint)pos2.Y].Char = '%';
                     //Buffer[(uint)pos3.X, (uint)pos3.Y].Char = '%';
                 }
+            }
 
             output.Append("\u001b[H");
+
+            Color? prevColour = null;
 
             for (var i = 0; i < height; i++)
             {
                 for (var j = 0; j < width; j++)
                 {
                     Charsel c = Buffer[i, j];
-                    output.Append($"\u001b[38;2;{c.Colour.R};{c.Colour.G};{c.Colour.B}m");
+                    if (!c.Colour.Equals(prevColour))
+                    {
+                        output.Append($"\u001b[38;2;{c.Colour.R};{c.Colour.G};{c.Colour.B}m");
+                        prevColour = c.Colour;
+                    }
                     output.Append(c.Char);
                 }
 
@@ -169,7 +173,7 @@ namespace Konsole
                     output.AppendLine();
             }
 
-            Console.Write(output);
+            consoleWriter.Write(output);
         }
     }
 }

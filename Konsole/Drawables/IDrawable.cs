@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Numerics;
-using System.Text;
+﻿using System.Numerics;
 
 namespace Konsole.Drawables
 {
-    public interface IDrawable 
+    public interface IDrawable
     {
         Vector3 Scale { get; }
         Vector3 Position { get; }
         Vector3 Rotation { get; }
+        Matrix4x4 ModelMatrix { get; }
         Mesh Mesh { get; }
     }
 }
