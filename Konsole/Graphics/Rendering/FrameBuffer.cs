@@ -1,8 +1,7 @@
-﻿using Konsole.Drawables;
-using Konsole.Extensions;
+﻿using Konsole.Extensions;
+using Konsole.Graphics.Drawables;
+using Konsole.Graphics.Primitives;
 using Konsole.IO;
-using Konsole.Primitives;
-using Konsole.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -11,7 +10,7 @@ using System.Numerics;
 using System.Reflection;
 using System.Text;
 
-namespace Konsole
+namespace Konsole.Graphics.Rendering
 {
     public class FrameBuffer
     {

@@ -1,12 +1,7 @@
-﻿using Konsole.Primitives;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using Konsole.Graphics.Primitives;
 using System.Globalization;
 using System.IO;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Konsole.IO
 {

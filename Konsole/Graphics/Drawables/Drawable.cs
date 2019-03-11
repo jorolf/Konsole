@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace Konsole.Drawables
+namespace Konsole.Graphics.Drawables
 {
     public class Drawable : IDrawable
     {

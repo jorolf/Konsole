@@ -13,7 +13,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Vectors\" />
+    <Compile Remove="Vectors\**" />
+    <EmbeddedResource Remove="Vectors\**" />
+    <None Remove="Vectors\**" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,10 +1,6 @@
-﻿using Konsole.Graphics.Colour;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Text;
+﻿using System.Drawing;
 
-namespace Konsole.Rendering
+namespace Konsole.Graphics.Rendering
 {
     /// <summary>
     /// Like a pixel but with characters.

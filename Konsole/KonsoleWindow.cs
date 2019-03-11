@@ -1,4 +1,5 @@
 ﻿using System;
+using Konsole.Graphics.Rendering;
 using Konsole.OS;
 
 namespace Konsole

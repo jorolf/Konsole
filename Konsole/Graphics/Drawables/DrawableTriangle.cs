@@ -1,10 +1,7 @@
-﻿using Konsole.Primitives;
-using System;
-using System.Collections.Generic;
+﻿using Konsole.Graphics.Primitives;
 using System.Numerics;
-using System.Text;
 
-namespace Konsole.Drawables
+namespace Konsole.Graphics.Drawables
 {
     public class DrawableTriangle : Drawable
     {

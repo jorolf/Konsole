@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Konsole.Containers
+namespace Konsole.Graphics.Drawables
 {
-    public interface IContainer
+    public class Model : Drawable
     {
 
     }

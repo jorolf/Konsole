@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Konsole.Extensions
+﻿namespace Konsole.Extensions
 {
     public static class ArrayExtensions
     {
@@ -10,10 +6,8 @@ namespace Konsole.Extensions
         public static void Populate<T>(this T[,] array, T obj)
         {
             for (int i = 0; i < array.GetLength(0); i++)
-                for (int a = 0; a < array.GetLength(1); a++)
-                {
-                    array[i, a] = obj;
-                }
+                for (int a = 0; a < array.GetLength(1); a++)               
+                    array[i, a] = obj;                
         }
     }
 }
