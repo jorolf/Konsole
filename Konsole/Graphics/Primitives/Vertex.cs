@@ -2,7 +2,7 @@
 
 namespace Konsole.Graphics.Primitives
 {
-    public class Vertex
+    public struct Vertex
     {
 
         public Vector3 Position;

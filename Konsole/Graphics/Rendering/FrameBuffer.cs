@@ -82,15 +82,14 @@ namespace Konsole.Graphics.Rendering
             if (bufferInvalid)
             {
                 Buffer = new Charsel[Height, Width];
-                output.Append("\u001b[?25l");
-                viewSpaceMatrix = Matrix4x4.CreateScale(Width, Height, 1);
-            }
-            else
                 Buffer.Populate(new Charsel
                 {
                     Char = ' ',
                     Colour = Color.FromArgb(0, 0, 0)
                 });
+                output.Append("\u001b[?25l");
+                viewSpaceMatrix = Matrix4x4.CreateScale(Width, Height, 1);
+            }              
 
             foreach (Drawable d in drawables)
             {
