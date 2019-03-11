@@ -1,4 +1,5 @@
 ﻿using Konsole.Drawables;
+using Konsole.Extensions;
 using Konsole.IO;
 using Konsole.Primitives;
 using Konsole.Rendering;
@@ -24,6 +25,7 @@ namespace Konsole
 
         private const float clipspace_width = 160, clipspace_height = 160;
         private readonly Matrix4x4 clipSpaceMatrix = Matrix4x4.CreateOrthographic(clipspace_width, clipspace_height, 0.1f, 100f) * Matrix4x4.CreateTranslation(1, 1, 0) * Matrix4x4.CreateScale(0.5f, 0.5f, 1);
+        
         private bool bufferInvalid;
 
         private int width;
@@ -85,7 +87,11 @@ namespace Konsole
                 viewSpaceMatrix = Matrix4x4.CreateScale(Width, Height, 1);
             }
             else
-                Array.Clear(Buffer, 0, Buffer.Length);
+                Buffer.Populate(new Charsel
+                {
+                    Char = ' ',
+                    Colour = Color.FromArgb(0, 0, 0)
+                });
 
             foreach (Drawable d in drawables)
             {
