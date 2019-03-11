@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Konsole.Graphics.Rendering;
 using Konsole.OS;
 
@@ -6,7 +7,6 @@ namespace Konsole
 {
     public class KonsoleWindow
     {
-        private FrameBuffer buffer;
         public KonsoleWindow()
         {
             Console.WriteLine($"Height: {Console.WindowHeight}, Width: {Console.WindowWidth}");
@@ -15,13 +15,19 @@ namespace Konsole
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
                 Windows.EnableWindowsColour();
 
-            buffer = new FrameBuffer(Console.Write);
+            var buffer = new FrameBuffer(Console.Write);
+
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
 
             while (true)
             {
                 buffer.Width = Console.WindowWidth;
                 buffer.Height = Console.WindowHeight;
                 buffer.Render();
+                long millisecs = watch.ElapsedMilliseconds;
+                Debug.WriteLine($"Elapsed time: {millisecs}. FPS: {1000f/millisecs}");
+                watch.Restart();
             }
         }
     }
