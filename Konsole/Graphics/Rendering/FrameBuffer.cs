@@ -24,7 +24,7 @@ namespace Konsole.Graphics.Rendering
 
         private const float clipspace_width = 160, clipspace_height = 160;
         private readonly Matrix4x4 clipSpaceMatrix = Matrix4x4.CreateOrthographic(clipspace_width, clipspace_height, 0.1f, 100f) * Matrix4x4.CreateTranslation(1, 1, 0) * Matrix4x4.CreateScale(0.5f, 0.5f, 1);
-        
+
         private bool bufferInvalid;
 
         private int width;
@@ -82,14 +82,16 @@ namespace Konsole.Graphics.Rendering
             if (bufferInvalid)
             {
                 Buffer = new Charsel[Height, Width];
-                Buffer.Populate(new Charsel
-                {
-                    Char = ' ',
-                    Colour = Color.FromArgb(0, 0, 0)
-                });
                 output.Append("\u001b[?25l");
                 viewSpaceMatrix = Matrix4x4.CreateScale(Width, Height, 1);
-            }              
+                bufferInvalid = false;
+            }
+
+            Buffer.Populate(new Charsel
+            {
+                Char = ' ',
+                Colour = Color.White,
+            });
 
             foreach (Drawable d in drawables)
             {
@@ -164,7 +166,6 @@ namespace Konsole.Graphics.Rendering
                 for (var j = 0; j < width; j++)
                 {
                     Charsel c = Buffer[i, j];
-                    c.Colour = Color.FromArgb(255, 255, 255);
                     if (!c.Colour.Equals(prevColour))
                     {
                         output.Append($"\u001b[38;2;{c.Colour.R};{c.Colour.G};{c.Colour.B}m");
