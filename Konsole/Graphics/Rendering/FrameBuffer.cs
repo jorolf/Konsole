@@ -65,7 +65,7 @@ namespace Konsole.Graphics.Rendering
                 {
                     Triangles = OBJParser.ParseFile(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar + "player.obj", Properties.FlipY)
                 },
-                Scale = new Vector3(0.5f, 0.33f, 0.33f),
+                Scale = new Vector3(0.33f),
                 Position = new Vector3(0,0.5f,1)
             };
             drawables.Add(d);
@@ -82,7 +82,7 @@ namespace Konsole.Graphics.Rendering
             {
                 Buffer = new Charsel[Height, Width];
                 output.Append("\u001b[?25l");
-                projectionMatrix = Matrix4x4.CreatePerspectiveFieldOfView(1.5708f, width / height, 1, float.PositiveInfinity);
+                projectionMatrix = Matrix4x4.CreatePerspectiveFieldOfView(1.5708f, Width / Height, 1, float.PositiveInfinity);
                 bufferInvalid = false;
             }
 
@@ -103,19 +103,12 @@ namespace Konsole.Graphics.Rendering
 
                     var m = d.DrawableMatrix;
 
-                    m *= viewMatrix;
+                    m *= viewMatrix;                  
                     m *= projectionMatrix;
 
-                    pos1 = Vector3.Transform(pos1, m);
-                    pos2 = Vector3.Transform(pos2, m);
-                    pos3 = Vector3.Transform(pos3, m);
-
-                    pos1.X = pos1.X.Remap(-1, 1, 0, Width);
-                    pos2.X = pos2.X.Remap(-1, 1, 0, Width);
-                    pos3.X = pos3.X.Remap(-1, 1, 0, Width);
-                    pos1.Y = pos1.Y.Remap(-1, 1, 0, Height);
-                    pos2.Y = pos2.Y.Remap(-1, 1, 0, Height);
-                    pos3.Y = pos3.Y.Remap(-1, 1, 0, Height);
+                    pos1 = Vector3.Transform(pos1, m) * new Vector3(Width, Height / 2, 1) + new Vector3(Width / 2, Height / 2, 0);
+                    pos2 = Vector3.Transform(pos2, m) * new Vector3(Width, Height / 2, 1) + new Vector3(Width / 2, Height / 2, 0);
+                    pos3 = Vector3.Transform(pos3, m) * new Vector3(Width, Height / 2, 1) + new Vector3(Width / 2, Height / 2, 0);
 
                     const int k = 200;
                     var ab = pos2 - pos1;
