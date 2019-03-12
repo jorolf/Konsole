@@ -20,10 +20,9 @@ namespace Konsole.Graphics.Rendering
 
         private readonly List<Drawable> drawables = new List<Drawable>();
 
-        private Matrix4x4 viewSpaceMatrix;
+        private Matrix4x4 viewMatrix = Matrix4x4.CreateLookAt(Vector3.Zero, new Vector3(0, 0, 1), new Vector3(0, 1, 0));
+        private Matrix4x4 projectionMatrix;
 
-        private const float clipspace_width = 160, clipspace_height = 160;
-        private readonly Matrix4x4 clipSpaceMatrix = Matrix4x4.CreateOrthographic(clipspace_width, clipspace_height, 0.1f, 100f) * Matrix4x4.CreateTranslation(1, 1, 0) * Matrix4x4.CreateScale(0.5f, 0.5f, 1);
 
         private bool bufferInvalid;
 
@@ -64,10 +63,10 @@ namespace Konsole.Graphics.Rendering
             {
                 Mesh = new Mesh
                 {
-                    Triangles = OBJParser.ParseFile(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar + "player.obj")
+                    Triangles = OBJParser.ParseFile(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar + "player.obj", Properties.FlipY)
                 },
-                Scale = new Vector3(25, 50, 25),
-                Position = new Vector3(0, 75, 0),
+                Scale = new Vector3(0.5f, 0.33f, 0.33f),
+                Position = new Vector3(0,0.5f,1)
             };
             drawables.Add(d);
         }
@@ -83,7 +82,7 @@ namespace Konsole.Graphics.Rendering
             {
                 Buffer = new Charsel[Height, Width];
                 output.Append("\u001b[?25l");
-                viewSpaceMatrix = Matrix4x4.CreateScale(Width, Height, 1);
+                projectionMatrix = Matrix4x4.CreatePerspectiveFieldOfView(1.5708f, width / height, 1, float.PositiveInfinity);
                 bufferInvalid = false;
             }
 
@@ -102,14 +101,21 @@ namespace Konsole.Graphics.Rendering
                     var pos2 = t.B.Position;
                     var pos3 = t.C.Position;
 
-                    var m = d.ModelMatrix;
+                    var m = d.DrawableMatrix;
 
-                    m *= clipSpaceMatrix;
-                    m *= viewSpaceMatrix;
+                    m *= viewMatrix;
+                    m *= projectionMatrix;
 
                     pos1 = Vector3.Transform(pos1, m);
                     pos2 = Vector3.Transform(pos2, m);
                     pos3 = Vector3.Transform(pos3, m);
+
+                    pos1.X = pos1.X.Remap(-1, 1, 0, Width);
+                    pos2.X = pos2.X.Remap(-1, 1, 0, Width);
+                    pos3.X = pos3.X.Remap(-1, 1, 0, Width);
+                    pos1.Y = pos1.Y.Remap(-1, 1, 0, Height);
+                    pos2.Y = pos2.Y.Remap(-1, 1, 0, Height);
+                    pos3.Y = pos3.Y.Remap(-1, 1, 0, Height);
 
                     const int k = 200;
                     var ab = pos2 - pos1;
@@ -119,13 +125,22 @@ namespace Konsole.Graphics.Rendering
                     //perimeter
                     for (int i = 0; i < k; i++)
                     {
-                        Buffer[(int)pos1.Y + (int)(ab.Y * i/k), (int)pos1.X + (int)(ab.X * i/k)].Char = '█';
-                        Buffer[(int)pos2.Y + (int)(bc.Y * i/k), (int)pos2.X + (int)(bc.X * i/k)].Char = '█';
-                        Buffer[(int)pos1.Y + (int)(ac.Y * i/k), (int)pos1.X + (int)(ac.X * i / k)].Char = '█';
+                        var y = pos1.Y + (ab.Y * i / k);
+                        var x = pos1.X + (ab.X * i / k);
+                        if (x >= 0 && x < Width && y > 0 && y < Height)
+                            Buffer[(int)y, (int)x].Char = '█';
+                        y = pos2.Y + (bc.Y * i / k);
+                        x = pos2.X + (bc.X * i / k);
+                        if (x >= 0 && x < Width && y > 0 && y < Height)
+                            Buffer[(int)y, (int)x].Char = '█';
+                        y = pos1.Y + (ac.Y * i / k);
+                        x = pos1.X + (ac.X * i / k);
+                        if (x >= 0 && x < Width && y > 0 && y < Height)
+                            Buffer[(int)y, (int)x].Char = '█';
                     }
 
                     //fill
-
+                    /*
                     for (int y = 0; y < Buffer.GetLength(0); y++)
                     {
                         int x = 0;
@@ -149,7 +164,7 @@ namespace Konsole.Graphics.Rendering
                             }
                         }
 
-                    }
+                    }*/
 
                     //Buffer[(uint)pos1.X, (uint)pos1.Y].Char = '%';
                     //Buffer[(uint)pos2.X, (uint)pos2.Y].Char = '%';

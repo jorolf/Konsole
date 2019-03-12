@@ -7,7 +7,7 @@ namespace Konsole.IO
 {
     public static class OBJParser
     {
-        public static Triangle[] ParseFile(string path)
+        public static Triangle[] ParseFile(string path, Properties properties = Properties.Default)
         {
             //Stopwatch watch = new Stopwatch();
             //watch.Start();
@@ -57,10 +57,22 @@ namespace Konsole.IO
                 else if (t.StartsWith("v "))
                 {
                     string[] temp = t.Split(' ');
-                    Positions[pIndex] = new Vector3(
-                        float.Parse(temp[1], CultureInfo.InvariantCulture),
-                        -float.Parse(temp[2], CultureInfo.InvariantCulture),
-                        float.Parse(temp[3], CultureInfo.InvariantCulture));
+                    float X;
+                    float Y;
+                    float Z;
+                    if ((properties & Properties.FlipX) == Properties.FlipX)
+                        X = -float.Parse(temp[1], CultureInfo.InvariantCulture);
+                    else
+                        X = float.Parse(temp[1], CultureInfo.InvariantCulture);
+                    if ((properties & Properties.FlipY) == Properties.FlipY)
+                        Y = -float.Parse(temp[2], CultureInfo.InvariantCulture);
+                    else
+                        Y = float.Parse(temp[2], CultureInfo.InvariantCulture);
+                    if ((properties & Properties.FlipZ) == Properties.FlipZ)
+                        Z = -float.Parse(temp[3], CultureInfo.InvariantCulture);
+                    else
+                        Z = float.Parse(temp[3], CultureInfo.InvariantCulture);
+                    Positions[pIndex] = new Vector3(X, Y, Z);                       
                     pIndex++;
                     temp = null;
                 }
@@ -68,18 +80,25 @@ namespace Konsole.IO
                 else if (t.StartsWith("f "))
                 {
                     string[] Indices = t.Substring(2).Split(new char[] { ' ', '/' });
-                    int[] Temp = new int[9];
+                    int[] Temp = new int[Indices.Length];
                     for (int i = 0; i < Temp.Length; i++)
                     {
                         int.TryParse(Indices[i], out Temp[i]);
                         Temp[i]--;
                     }
 
-                    Triangles[fIndex] = new Triangle(
-                        new Vertex(Positions[Temp[0]], Vector3.Zero),
-                        new Vertex(Positions[Temp[3]], Vector3.Zero),
-                        new Vertex(Positions[Temp[6]], Vector3.Zero)
-                    );
+                    if (Temp.Length == 9)
+                        Triangles[fIndex] = new Triangle(
+                            new Vertex(Positions[Temp[0]], Vector3.Zero),
+                            new Vertex(Positions[Temp[3]], Vector3.Zero),
+                            new Vertex(Positions[Temp[6]], Vector3.Zero)
+                        );
+                    else
+                        Triangles[fIndex] = new Triangle(
+                            new Vertex(Positions[Temp[0]], Vector3.Zero),
+                            new Vertex(Positions[Temp[2]], Vector3.Zero),
+                            new Vertex(Positions[Temp[4]], Vector3.Zero)
+                        );
                     fIndex++;
                     Temp = null;
                 }
@@ -91,5 +110,16 @@ namespace Konsole.IO
 
             return Triangles;
         }
+    }
+    public enum Properties
+    {
+        Default = 0,
+        FlipX = 0b100,
+        FlipY = 0b010,
+        FlipZ = 0b001,
+        FlipXY = 0b110,
+        FlipXZ = 0b101,
+        FlipYZ = 0b011,
+        FLipXYZ = 0b111,
     }
 }
