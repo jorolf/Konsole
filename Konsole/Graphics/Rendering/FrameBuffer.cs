@@ -106,7 +106,7 @@ namespace Konsole.Graphics.Rendering
                     matrix *= viewMatrix;                  
                     matrix *= projectionMatrix;
 
-                    pos1 = Vector3.Transform(pos1, matrix) * new Vector3(Width, Height / 2, 1) + new Vector3(Width / 2, Height / 2, 0);
+                    pos1 = Vector3.Transform(pos1, matrix);
                     pos2 = Vector3.Transform(pos2, matrix);
                     pos3 = Vector3.Transform(pos3, matrix);
 
