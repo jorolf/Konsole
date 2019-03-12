@@ -66,7 +66,7 @@ namespace Konsole.Graphics.Rendering
                     Triangles = OBJParser.ParseFile(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar + "player.obj", Properties.FlipY)
                 },
                 Scale = new Vector3(0.33f),
-                Position = new Vector3(0,0.5f,1)
+                Position = new Vector3(0,0.5f,2)
             };
             drawables.Add(d);
         }
@@ -97,24 +97,32 @@ namespace Konsole.Graphics.Rendering
                 d.Rotation = new Vector3(time, 0, 0);
                 foreach (Triangle t in d.Mesh.Triangles)
                 {
-                    var pos1 = t.A.Position;
-                    var pos2 = t.B.Position;
-                    var pos3 = t.C.Position;
+                    Vector3 pos1 = t.A.Position;
+                    Vector3 pos2 = t.B.Position;
+                    Vector3 pos3 = t.C.Position;
 
-                    var m = d.DrawableMatrix;
+                    var matrix = d.DrawableMatrix;
 
-                    m *= viewMatrix;                  
-                    m *= projectionMatrix;
+                    matrix *= viewMatrix;                  
+                    matrix *= projectionMatrix;
 
-                    pos1 = Vector3.Transform(pos1, m) * new Vector3(Width, Height / 2, 1) + new Vector3(Width / 2, Height / 2, 0);
-                    pos2 = Vector3.Transform(pos2, m) * new Vector3(Width, Height / 2, 1) + new Vector3(Width / 2, Height / 2, 0);
-                    pos3 = Vector3.Transform(pos3, m) * new Vector3(Width, Height / 2, 1) + new Vector3(Width / 2, Height / 2, 0);
+                    pos1 = Vector3.Transform(pos1, matrix);
+                    pos2 = Vector3.Transform(pos2, matrix);
+                    pos3 = Vector3.Transform(pos3, matrix);
+
+                    pos1 /= pos1.Z;
+                    pos2 /= pos2.Z;
+                    pos3 /= pos3.Z;
+                  
+                    pos1 = pos1 * new Vector3(Width, Height / 2, 1) + new Vector3(Width / 2, Height / 2, 0);
+                    pos2 = pos2 * new Vector3(Width, Height / 2, 1) + new Vector3(Width / 2, Height / 2, 0);
+                    pos3 = pos3 * new Vector3(Width, Height / 2, 1) + new Vector3(Width / 2, Height / 2, 0);
 
                     const int k = 200;
+
                     var ab = pos2 - pos1;
                     var bc = pos3 - pos2;
                     var ac = pos3 - pos1;
-
                     //perimeter
                     for (int i = 0; i < k; i++)
                     {
