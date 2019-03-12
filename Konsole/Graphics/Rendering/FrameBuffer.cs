@@ -111,17 +111,25 @@ namespace Konsole.Graphics.Rendering
                     pos2 = Vector3.Transform(pos2, m);
                     pos3 = Vector3.Transform(pos3, m);
 
-                    const int k = 200;
-                    var ab = pos2 - pos1;
-                    var bc = pos3 - pos2;
-                    var ac = pos3 - pos1;
+                    const float k = 200;
 
                     //perimeter
                     for (int i = 0; i < k; i++)
                     {
-                        Buffer[(int)pos1.Y + (int)(ab.Y * i/k), (int)pos1.X + (int)(ab.X * i/k)].Char = '█';
-                        Buffer[(int)pos2.Y + (int)(bc.Y * i/k), (int)pos2.X + (int)(bc.X * i/k)].Char = '█';
-                        Buffer[(int)pos1.Y + (int)(ac.Y * i/k), (int)pos1.X + (int)(ac.X * i / k)].Char = '█';
+                        Vector3 abLerp = Vector3.Lerp(pos1, pos2, i / k);
+                        Vector3 bcLerp = Vector3.Lerp(pos2, pos3, i / k);
+                        Vector3 acLerp = Vector3.Lerp(pos1, pos3, i / k);
+
+                        bool InsideViewspace(Vector3 vec) => vec.X >= 0 && vec.X < Width && vec.Y >= 0 && vec.Y < Height;
+
+                        if (InsideViewspace(abLerp))
+                            Buffer[(int) abLerp.Y, (int) abLerp.X].Char = '█';
+
+                        if (InsideViewspace(bcLerp))
+                            Buffer[(int) bcLerp.Y, (int) bcLerp.X].Char = '█';
+
+                        if (InsideViewspace(acLerp))
+                            Buffer[(int) acLerp.Y, (int) acLerp.X].Char = '█';
                     }
 
                     //fill
