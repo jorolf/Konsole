@@ -82,7 +82,7 @@ namespace Konsole.Graphics.Rendering
             {
                 Buffer = new Charsel[Height, Width];
                 output.Append("\u001b[?25l");
-                projectionMatrix = Matrix4x4.CreatePerspectiveFieldOfView(1.5708f, Width / Height, 1, float.PositiveInfinity);
+                projectionMatrix = Matrix4x4.CreatePerspectiveFieldOfView(1.5708f, Width / (float) Height, 1, float.PositiveInfinity);
                 bufferInvalid = false;
             }
 
@@ -103,7 +103,7 @@ namespace Konsole.Graphics.Rendering
 
                     var matrix = d.DrawableMatrix;
 
-                    matrix *= viewMatrix;                  
+                    matrix *= viewMatrix;
                     matrix *= projectionMatrix;
 
                     pos1 = Vector3.Transform(pos1, matrix);
@@ -113,31 +113,30 @@ namespace Konsole.Graphics.Rendering
                     pos1 /= pos1.Z;
                     pos2 /= pos2.Z;
                     pos3 /= pos3.Z;
-                  
-                    pos1 = pos1 * new Vector3(Width, Height / 2, 1) + new Vector3(Width / 2, Height / 2, 0);
-                    pos2 = pos2 * new Vector3(Width, Height / 2, 1) + new Vector3(Width / 2, Height / 2, 0);
-                    pos3 = pos3 * new Vector3(Width, Height / 2, 1) + new Vector3(Width / 2, Height / 2, 0);
 
-                    const float k = 200;
+                    pos1 = pos1 * new Vector3(Width, Height / 2f, 1) + new Vector3(Width / 2f, Height / 2f, 0);
+                    pos2 = pos2 * new Vector3(Width, Height / 2f, 1) + new Vector3(Width / 2f, Height / 2f, 0);
+                    pos3 = pos3 * new Vector3(Width, Height / 2f, 1) + new Vector3(Width / 2f, Height / 2f, 0);
 
-                    //perimeter
-                    for (int i = 0; i < k; i++)
+                    void DrawLine(Vector3 a, Vector3 b)
                     {
-                        Vector3 abLerp = Vector3.Lerp(pos1, pos2, i / k);
-                        Vector3 bcLerp = Vector3.Lerp(pos2, pos3, i / k);
-                        Vector3 acLerp = Vector3.Lerp(pos1, pos3, i / k);
+                        float k = Vector3.Distance(a, b);
 
-                        bool InsideViewspace(Vector3 vec) => vec.X >= 0 && vec.X < Width && vec.Y >= 0 && vec.Y < Height;
+                        //perimeter
+                        for (int i = 0; i < k; i++)
+                        {
+                            Vector3 abLerp = Vector3.Lerp(a, b, i / k);
 
-                        if (InsideViewspace(abLerp))
-                            Buffer[(int) abLerp.Y, (int) abLerp.X].Char = '█';
+                            bool InsideViewspace(Vector3 vec) => vec.X >= 0 && vec.X < Width && vec.Y >= 0 && vec.Y < Height;
 
-                        if (InsideViewspace(bcLerp))
-                            Buffer[(int) bcLerp.Y, (int) bcLerp.X].Char = '█';
-
-                        if (InsideViewspace(acLerp))
-                            Buffer[(int) acLerp.Y, (int) acLerp.X].Char = '█';
+                            if (InsideViewspace(abLerp))
+                                Buffer[(int)abLerp.Y, (int)abLerp.X].Char = '█';
+                        }
                     }
+
+                    DrawLine(pos1, pos2);
+                    DrawLine(pos2, pos3);
+                    DrawLine(pos1, pos3);
 
                     //fill
                     /*
