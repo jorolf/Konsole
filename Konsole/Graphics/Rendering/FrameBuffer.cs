@@ -20,10 +20,9 @@ namespace Konsole.Graphics.Rendering
 
         private readonly List<Drawable> drawables = new List<Drawable>();
 
-        private Matrix4x4 viewSpaceMatrix;
+        private Matrix4x4 viewMatrix = Matrix4x4.CreateLookAt(Vector3.Zero, new Vector3(0, 0, 1), new Vector3(0, 1, 0));
+        private Matrix4x4 projectionMatrix;
 
-        private const float clipspace_width = 160, clipspace_height = 160;
-        private readonly Matrix4x4 clipSpaceMatrix = Matrix4x4.CreateOrthographic(clipspace_width, clipspace_height, 0.1f, 100f) * Matrix4x4.CreateTranslation(1, 1, 0) * Matrix4x4.CreateScale(0.5f, 0.5f, 1);
 
         private bool bufferInvalid;
 
@@ -64,10 +63,10 @@ namespace Konsole.Graphics.Rendering
             {
                 Mesh = new Mesh
                 {
-                    Triangles = OBJParser.ParseFile(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar + "player.obj")
+                    Triangles = OBJParser.ParseFile(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar + "player.obj", Properties.FlipY)
                 },
-                Scale = new Vector3(25, 50, 25),
-                Position = new Vector3(0, 75, 0),
+                Scale = new Vector3(0.33f),
+                Position = new Vector3(0,0.5f,2)
             };
             drawables.Add(d);
         }
@@ -83,7 +82,7 @@ namespace Konsole.Graphics.Rendering
             {
                 Buffer = new Charsel[Height, Width];
                 output.Append("\u001b[?25l");
-                viewSpaceMatrix = Matrix4x4.CreateScale(Width, Height, 1);
+                projectionMatrix = Matrix4x4.CreatePerspectiveFieldOfView(1.5708f, Width / Height, 1, float.PositiveInfinity);
                 bufferInvalid = false;
             }
 
@@ -98,18 +97,26 @@ namespace Konsole.Graphics.Rendering
                 d.Rotation = new Vector3(time, 0, 0);
                 foreach (Triangle t in d.Mesh.Triangles)
                 {
-                    var pos1 = t.A.Position;
-                    var pos2 = t.B.Position;
-                    var pos3 = t.C.Position;
+                    Vector3 pos1 = t.A.Position;
+                    Vector3 pos2 = t.B.Position;
+                    Vector3 pos3 = t.C.Position;
 
-                    var m = d.ModelMatrix;
+                    var matrix = d.DrawableMatrix;
 
-                    m *= clipSpaceMatrix;
-                    m *= viewSpaceMatrix;
+                    matrix *= viewMatrix;                  
+                    matrix *= projectionMatrix;
 
-                    pos1 = Vector3.Transform(pos1, m);
-                    pos2 = Vector3.Transform(pos2, m);
-                    pos3 = Vector3.Transform(pos3, m);
+                    pos1 = Vector3.Transform(pos1, matrix);
+                    pos2 = Vector3.Transform(pos2, matrix);
+                    pos3 = Vector3.Transform(pos3, matrix);
+
+                    pos1 /= pos1.Z;
+                    pos2 /= pos2.Z;
+                    pos3 /= pos3.Z;
+                  
+                    pos1 = pos1 * new Vector3(Width, Height / 2, 1) + new Vector3(Width / 2, Height / 2, 0);
+                    pos2 = pos2 * new Vector3(Width, Height / 2, 1) + new Vector3(Width / 2, Height / 2, 0);
+                    pos3 = pos3 * new Vector3(Width, Height / 2, 1) + new Vector3(Width / 2, Height / 2, 0);
 
                     const float k = 200;
 
@@ -133,7 +140,7 @@ namespace Konsole.Graphics.Rendering
                     }
 
                     //fill
-
+                    /*
                     for (int y = 0; y < Buffer.GetLength(0); y++)
                     {
                         int x = 0;
@@ -157,7 +164,7 @@ namespace Konsole.Graphics.Rendering
                             }
                         }
 
-                    }
+                    }*/
 
                     //Buffer[(uint)pos1.X, (uint)pos1.Y].Char = '%';
                     //Buffer[(uint)pos2.X, (uint)pos2.Y].Char = '%';
