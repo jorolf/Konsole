@@ -19,6 +19,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Settings.StyleCop" />
+    <None Remove="StyleCop.Cache" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="System.Numerics.Vectors">
       <HintPath>C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.netcore.app\2.2.0\ref\netcoreapp2.2\System.Numerics.Vectors.dll</HintPath>
     </Reference>

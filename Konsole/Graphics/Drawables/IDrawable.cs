@@ -7,6 +7,7 @@ namespace Konsole.Graphics.Drawables
         Vector3 Scale { get; }
         Vector3 Position { get; }
         Vector3 Rotation { get; }
+        Vector3 Origin { get; }
         Matrix4x4 DrawableMatrix { get; }
         Mesh Mesh { get; }
     }
