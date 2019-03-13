@@ -66,7 +66,8 @@ namespace Konsole.Graphics.Rendering
                     Triangles = OBJParser.ParseFile(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar + "player.obj", Properties.FlipY)
                 },
                 Scale = new Vector3(0.33f),
-                Position = new Vector3(0,0.5f,2)
+                Position = new Vector3(0,0,2),
+                Origin = new Vector3(0,1.2f,0)
             };
             drawables.Add(d);
         }
@@ -94,7 +95,7 @@ namespace Konsole.Graphics.Rendering
 
             foreach (Drawable d in drawables)
             {
-                d.Rotation = new Vector3(time, 0, 0);
+                d.Rotation = new Vector3(time, time, 0);
                 foreach (Triangle t in d.Mesh.Triangles)
                 {
                     Vector3 pos1 = t.A.Position;
