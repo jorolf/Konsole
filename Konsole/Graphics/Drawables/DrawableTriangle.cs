@@ -13,7 +13,6 @@ namespace Konsole.Graphics.Drawables
                     new Vertex(new Vector3(0,0,0), Vector3.Zero),
                     new Vertex(new Vector3(10,0,0), Vector3.Zero),
                     new Vertex(new Vector3(0,10,0), Vector3.Zero))
-
             };
         }
     }

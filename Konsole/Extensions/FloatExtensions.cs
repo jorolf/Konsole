@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
+﻿
 namespace Konsole.Extensions
 {
     public static class FloatExtensions
@@ -10,6 +7,5 @@ namespace Konsole.Extensions
         {
             return (number - oldFloor) * (newCeiling  - newFloor) / (oldCeiling - oldFloor) + newFloor;
         }
-       
     }
 }

@@ -72,7 +72,7 @@ namespace Konsole.IO
                         Z = -float.Parse(temp[3], CultureInfo.InvariantCulture);
                     else
                         Z = float.Parse(temp[3], CultureInfo.InvariantCulture);
-                    Positions[pIndex] = new Vector3(X, Y, Z);                       
+                    Positions[pIndex] = new Vector3(X, Y, Z);
                     pIndex++;
                     temp = null;
                 }

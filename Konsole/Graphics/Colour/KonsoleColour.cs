@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
+﻿
 namespace Konsole.Graphics.Colour
 {
     public enum KonsoleColour
@@ -24,7 +21,7 @@ namespace Konsole.Graphics.Colour
         Yellow,
         LightYellow
     }
-    
+
     public static class KonsoleColourMethods
     {
         public static string ToBackgroundColour(this KonsoleColour colour)
