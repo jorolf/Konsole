@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Threading.Tasks;
-using System.Drawing;
-using Konsole.IO;
-using System.IO;
 using Konsole;
-using Konsole.OS;
 
 namespace TestApp
 {
@@ -15,6 +10,5 @@ namespace TestApp
             KonsoleWindow window = new KonsoleWindow();
             Console.ReadLine();
         }
-
     }
 }

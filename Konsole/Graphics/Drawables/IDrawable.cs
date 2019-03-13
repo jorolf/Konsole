@@ -11,4 +11,3 @@ namespace Konsole.Graphics.Drawables
         Mesh Mesh { get; }
     }
 }
-

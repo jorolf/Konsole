@@ -23,7 +23,6 @@ namespace Konsole.Graphics.Rendering
         private Matrix4x4 viewMatrix = Matrix4x4.CreateLookAt(Vector3.Zero, new Vector3(0, 0, 1), new Vector3(0, 1, 0));
         private Matrix4x4 projectionMatrix;
 
-
         private bool bufferInvalid;
 
         private int width;
@@ -197,4 +196,3 @@ namespace Konsole.Graphics.Rendering
         }
     }
 }
-
