@@ -19,7 +19,6 @@ namespace Konsole.Graphics.Rendering
         private readonly StringBuilder output = new StringBuilder();
 
         public Charsel[,] Buffer { get; private set; }
-        public float?[,] ZBuffer { get; private set; }
 
         private readonly Action<string> consoleWriter;
 
@@ -101,7 +100,6 @@ namespace Konsole.Graphics.Rendering
             if (bufferInvalid)
             {
                 Buffer = new Charsel[Height, Width];
-                ZBuffer = new float?[Height, Width];
                 output.Append("\u001b[?25l");
                 projectionMatrix = Matrix4x4.CreatePerspectiveFieldOfView(1.5708f, Width / (float) Height, 1, float.PositiveInfinity);
                 bufferInvalid = false;
@@ -111,8 +109,8 @@ namespace Konsole.Graphics.Rendering
             {
                 Char = ' ',
                 Colour = Color.White,
+                Depth = null
             });
-            ZBuffer.Populate(null);
 
             drawables[1].Position = new Vector3(0, 0, MathF.Sin((float)clock.Time * 1.2f) + 1.2f);
             foreach (Drawable d in drawables)
@@ -154,10 +152,10 @@ namespace Konsole.Graphics.Rendering
 
                             if (InsideViewspace(abLerp))
                             {
-                                var depth = ZBuffer[(int)abLerp.Y, (int)abLerp.X];
+                                var depth = Buffer[(int)abLerp.Y, (int)abLerp.X].Depth;
                                 if (depth == null || depth > abLerp.Z)
                                 {
-                                    ZBuffer[(int)abLerp.Y, (int)abLerp.X] = abLerp.Z;
+                                    Buffer[(int)abLerp.Y, (int)abLerp.X].Depth = abLerp.Z;
                                     Buffer[(int)abLerp.Y, (int)abLerp.X].Char = '█';
                                     Buffer[(int)abLerp.Y, (int)abLerp.X].Colour = d.Mesh.Colour;
                                 }
