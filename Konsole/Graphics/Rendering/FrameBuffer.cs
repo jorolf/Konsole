@@ -1,4 +1,5 @@
-﻿using Konsole.Extensions;
+﻿using Konsole.Clocks;
+using Konsole.Extensions;
 using Konsole.Graphics.Drawables;
 using Konsole.Graphics.Primitives;
 using Konsole.IO;
@@ -22,6 +23,8 @@ namespace Konsole.Graphics.Rendering
 
         private Matrix4x4 viewMatrix = Matrix4x4.CreateLookAt(Vector3.Zero, new Vector3(0, 0, 1), new Vector3(0, 1, 0));
         private Matrix4x4 projectionMatrix;
+
+        private FrameClock clock = new FrameClock();
 
         private bool bufferInvalid;
 
@@ -76,7 +79,6 @@ namespace Konsole.Graphics.Rendering
         public void Render()
         {
             output.Clear();
-            time += 0.1f;
 
             if (bufferInvalid)
             {
@@ -94,7 +96,7 @@ namespace Konsole.Graphics.Rendering
 
             foreach (Drawable d in drawables)
             {
-                d.Rotation = new Vector3(time, time, 0);
+                d.Rotation = new Vector3((float)clock.Time, (float)clock.Time, 0);
                 foreach (Triangle t in d.Mesh.Triangles)
                 {
                     Vector3 pos1 = t.A.Position;

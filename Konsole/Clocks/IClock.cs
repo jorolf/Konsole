@@ -6,6 +6,10 @@ namespace Konsole.Clocks
         /// <summary>
         /// This Clock's time in milliseconds.
         /// </summary>
-        uint Time { get; }
+        uint TimeMilliseconds { get; }
+        /// <summary>
+        /// This Clock's time in seconds.
+        /// </summary>
+        double Time { get; }
     }
 }
