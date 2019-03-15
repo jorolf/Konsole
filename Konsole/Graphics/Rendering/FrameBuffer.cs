@@ -71,8 +71,8 @@ namespace Konsole.Graphics.Rendering
                     Triangles = OBJParser.ParseFile(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar + "player.obj", Properties.FlipY),
                     Colour = Color.White
                 },
-                Scale = new Vector3(0.33f),
-                Position = new Vector3(0,0,1),
+                Scale = new Vector3(0.4f),
+                Position = new Vector3(0,0,1f),
                 Origin = new Vector3(0,1.2f,0),
                 Rotation = new Vector3(MathF.PI / 2,0,0)
             };
@@ -91,9 +91,7 @@ namespace Konsole.Graphics.Rendering
             drawables.Add(s);
         }
 
-        private float time;
-
-        public void Render()
+        public void Render(bool Wireframe = false)
         {
             output.Clear();
 
@@ -112,7 +110,7 @@ namespace Konsole.Graphics.Rendering
                 Depth = null
             });
 
-            drawables[1].Position = new Vector3(0, 0, MathF.Sin((float)clock.Time * 1.2f) + 1.2f);
+            //drawables[0].Rotation = new Vector3((float)clock.Time * 2, 0, 0);
             foreach (Drawable d in drawables)
             {
                 foreach (Triangle t in d.Mesh.Triangles)
@@ -134,69 +132,31 @@ namespace Konsole.Graphics.Rendering
                     pos2 /= pos2.W;
                     pos3 /= pos3.W;
 
-                    pos1 = pos1 * new Vector4(Width, Height / 2f, 1, 1) + new Vector4(Width / 2f, Height / 2f, 0, 0);
-                    pos2 = pos2 * new Vector4(Width, Height / 2f, 1, 1) + new Vector4(Width / 2f, Height / 2f, 0, 0);
-                    pos3 = pos3 * new Vector4(Width, Height / 2f, 1, 1) + new Vector4(Width / 2f, Height / 2f, 0, 0);
+                    pos1 = pos1.ToPixel(Width, Height);
+                    pos2 = pos2.ToPixel(Width, Height);
+                    pos3 = pos3.ToPixel(Width, Height);
 
-                    void DrawLine(Vector4 a, Vector4 b)
-                    {
-                        //We need a way to stop this from killing the performance due to the loop running way too many times in cases of long lines that go off-screen.
-                        float k = Vector4.Distance(a, b);
+                    V4Extensions.Bounds(pos1, pos2, pos3, out Vector2 BoundsStart, out Vector2 BoundsEnd);
 
-                        //perimeter
-                        for (int i = 0; i < k; i++)
+                    for (int y = (int)BoundsStart.Y; y < (int)BoundsEnd.Y; y++)
+                        for (int x = (int)BoundsStart.X; x < (int)BoundsEnd.X; x++)
                         {
-                            Vector4 abLerp = Vector4.Lerp(a, b, i / k);
-
-                            bool InsideViewspace(Vector4 vec) => vec.X >= 0 && vec.X < Width && vec.Y >= 0 && vec.Y < Height && vec.Z < 1f;
-
-                            if (InsideViewspace(abLerp))
+                            var sample = new Vector2(x + 0.5f, y + 0.5f);
+                            if (V4Extensions.Edge(pos1, pos2, sample) &&
+                                V4Extensions.Edge(pos2, pos3, sample) &&
+                                V4Extensions.Edge(pos3, pos1, sample))
                             {
-                                var depth = Buffer[(int)abLerp.Y, (int)abLerp.X].Depth;
-                                if (depth == null || depth > abLerp.Z)
+                                var weights = V4Extensions.Barycentric(pos1, pos2, pos3, new Vector2(x + 0.5f, y + 0.5f));
+                                var depth = (pos1.Z * weights.X) + (pos2.Z * weights.Y) + (pos3.Z * weights.Z);
+
+                                if (Buffer[y, x].Depth == null || Buffer[y, x].Depth > depth)
                                 {
-                                    Buffer[(int)abLerp.Y, (int)abLerp.X].Depth = abLerp.Z;
-                                    Buffer[(int)abLerp.Y, (int)abLerp.X].Char = '█';
-                                    Buffer[(int)abLerp.Y, (int)abLerp.X].Colour = d.Mesh.Colour;
+                                    Buffer[y, x].Char = '█';
+                                    Buffer[y, x].Colour = d.Mesh.Colour;
+                                    Buffer[y, x].Depth = depth;
                                 }
                             }
                         }
-                    }
-
-                    DrawLine(pos1, pos2);
-                    DrawLine(pos2, pos3);
-                    DrawLine(pos1, pos3);
-
-                    //fill
-                    /*
-                    for (int y = 0; y < Buffer.GetLength(0); y++)
-                    {
-                        int x = 0;
-                        bool found = false;
-                        while (x < Buffer.GetLength(1) - 1)
-                        {
-                            found = Buffer[y, x].Char == '█';
-                            if (found)
-                                break;
-                            x++;
-                        }
-                        if (found)
-                        {
-                            while (x < Buffer.GetLength(1) - 1)
-                            {
-                                //Buffer[y, x].Char = '█';
-                                x++;
-                                found = Buffer[y, x].Char == '█';
-                                if(found)
-                                    break;
-                            }
-                        }
-
-                    }*/
-
-                    //Buffer[(uint)pos1.X, (uint)pos1.Y].Char = '%';
-                    //Buffer[(uint)pos2.X, (uint)pos2.Y].Char = '%';
-                    //Buffer[(uint)pos3.X, (uint)pos3.Y].Char = '%';
                 }
             }
 
