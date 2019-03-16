@@ -1,12 +1,11 @@
 ﻿using Konsole.Clocks;
 using Konsole.Extensions;
+using Konsole.Graphics.Colour;
 using Konsole.Graphics.Drawables;
 using Konsole.Graphics.Primitives;
 using Konsole.IO;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Numerics;
 using System.Reflection;
@@ -69,7 +68,7 @@ namespace Konsole.Graphics.Rendering
                 Mesh = new Mesh
                 {
                     Triangles = OBJParser.ParseFile(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar + "player.obj", Properties.FlipY),
-                    Colour = Color.White
+                    Colour = new Colour3(1f, 1f, 1f)
                 },
                 Scale = new Vector3(0.4f),
                 Position = new Vector3(0,0,1f),
@@ -81,13 +80,13 @@ namespace Konsole.Graphics.Rendering
                 Mesh = new Mesh
                 {
                     Triangles = OBJParser.ParseFile(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar + "shrek.obj", Properties.FlipY),
-                    Colour = Color.FromArgb(123, 186, 46)
+                    Colour = Colour3.FromBytes(123, 186, 46)
                 },
-                Scale = new Vector3(0.60f),
-                Position = new Vector3(0, 0, 1.5f),
+                Scale = new Vector3(0.66f),
+                Position = new Vector3(0, 0, 1f),
                 Origin = new Vector3(0, 0.4f, 0),
             };
-            drawables.Add(d);
+            //drawables.Add(d);
             drawables.Add(s);
         }
 
@@ -106,11 +105,11 @@ namespace Konsole.Graphics.Rendering
             Buffer.Populate(new Charsel
             {
                 Char = ' ',
-                Colour = Color.White,
+                Colour = new Colour3(0, 0, 0),
                 Depth = null
             });
 
-            //drawables[0].Rotation = new Vector3((float)clock.Time * 2, 0, 0);
+            drawables[0].Rotation = new Vector3((float)clock.Time * 2, 0, 0);
             foreach (Drawable d in drawables)
             {
                 foreach (Triangle t in d.Mesh.Triangles)
@@ -162,7 +161,7 @@ namespace Konsole.Graphics.Rendering
 
             output.Append("\u001b[H");
 
-            Color? prevColour = null;
+            Colour3? prevColour = null;
 
             for (var i = 0; i < height; i++)
             {
@@ -171,7 +170,7 @@ namespace Konsole.Graphics.Rendering
                     Charsel c = Buffer[i, j];
                     if (!c.Colour.Equals(prevColour))
                     {
-                        output.Append($"\u001b[38;2;{c.Colour.R};{c.Colour.G};{c.Colour.B}m");
+                        output.Append($"\u001b[38;2;{c.Colour.R.ToByte()};{c.Colour.G.ToByte()};{c.Colour.B.ToByte()}m");
                         prevColour = c.Colour;
                     }
                     output.Append(c.Char);
