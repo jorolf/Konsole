@@ -17,17 +17,11 @@ namespace Konsole
 
             var buffer = new FrameBuffer(Console.Write);
 
-            Stopwatch watch = new Stopwatch();
-            watch.Start();
-
             while (true)
             {
                 buffer.Width = Console.WindowWidth;
                 buffer.Height = Console.WindowHeight;
                 buffer.Render();
-                long millisecs = watch.ElapsedMilliseconds;
-                Debug.WriteLine($"Elapsed time: {millisecs}. FPS: {1000f/millisecs}");
-                watch.Restart();
             }
         }
     }

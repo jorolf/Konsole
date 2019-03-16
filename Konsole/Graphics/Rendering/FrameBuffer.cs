@@ -6,6 +6,7 @@ using Konsole.Graphics.Primitives;
 using Konsole.IO;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Numerics;
 using System.Reflection;
@@ -27,6 +28,7 @@ namespace Konsole.Graphics.Rendering
         private Matrix4x4 projectionMatrix;
 
         private FrameClock clock = new FrameClock();
+        private Stopwatch watch = new Stopwatch();
 
         private bool bufferInvalid;
 
@@ -92,6 +94,8 @@ namespace Konsole.Graphics.Rendering
 
         public void Render(bool Wireframe = false)
         {
+            watch.Restart();
+
             output.Clear();
 
             if (bufferInvalid)
@@ -179,8 +183,11 @@ namespace Konsole.Graphics.Rendering
                 if (i != height - 1)
                     output.AppendLine();
             }
-
+            var renderTime = watch.ElapsedTicks;
+            var renderTimeMs = watch.ElapsedMilliseconds;
             consoleWriter(output.ToString());
+            watch.Stop();
+            Debug.WriteLine($"Render time: {renderTimeMs}ms. Draw time: {watch.ElapsedMilliseconds - renderTimeMs}ms. Total time: {watch.ElapsedMilliseconds}ms FPS: {1000f / watch.ElapsedMilliseconds}.");
         }
     }
 }
