@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+﻿using Konsole.Graphics.Colour;
 
 namespace Konsole.Graphics.Rendering
 {
@@ -7,7 +7,7 @@ namespace Konsole.Graphics.Rendering
     /// </summary>
     public struct Charsel
     {
-        public Color Colour;
+        public Colour3 Colour;
         public char Char;
         public float? Depth;
     }

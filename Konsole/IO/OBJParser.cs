@@ -89,15 +89,15 @@ namespace Konsole.IO
 
                     if (Temp.Length == 9)
                         Triangles[fIndex] = new Triangle(
-                            new Vertex(Positions[Temp[0]], Vector3.Zero),
-                            new Vertex(Positions[Temp[3]], Vector3.Zero),
-                            new Vertex(Positions[Temp[6]], Vector3.Zero)
+                            new Vertex(Positions[Temp[0]], Vector3.Zero, Vector2.Zero),
+                            new Vertex(Positions[Temp[3]], Vector3.Zero, Vector2.Zero),
+                            new Vertex(Positions[Temp[6]], Vector3.Zero, Vector2.Zero)
                         );
                     else
                         Triangles[fIndex] = new Triangle(
-                            new Vertex(Positions[Temp[0]], Vector3.Zero),
-                            new Vertex(Positions[Temp[2]], Vector3.Zero),
-                            new Vertex(Positions[Temp[4]], Vector3.Zero)
+                            new Vertex(Positions[Temp[0]], Vector3.Zero, Vector2.Zero),
+                            new Vertex(Positions[Temp[2]], Vector3.Zero, Vector2.Zero),
+                            new Vertex(Positions[Temp[4]], Vector3.Zero, Vector2.Zero)
                         );
                     fIndex++;
                     Temp = null;

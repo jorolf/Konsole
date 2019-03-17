@@ -1,4 +1,5 @@
-﻿using Konsole.Graphics.Primitives;
+﻿using Konsole.Graphics.Colour;
+using Konsole.Graphics.Primitives;
 using System.Drawing;
 
 namespace Konsole.Graphics.Drawables
@@ -9,6 +10,6 @@ namespace Konsole.Graphics.Drawables
         /// <summary>
         /// TEMPORARY WORKAROUND, THIS NEEDS TO BE CHANGED.
         /// </summary>
-        public Color Colour;
+        public Colour3 Colour;
     }
 }
