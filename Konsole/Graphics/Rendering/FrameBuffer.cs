@@ -85,15 +85,21 @@ namespace Konsole.Graphics.Rendering
                     Colour = Colour3.FromBytes(123, 186, 46)
                 },
                 Scale = new Vector3(0.66f),
-                Position = new Vector3(0, 0, 1f),
+                Position = new Vector3(0, 0, 2f),
                 Origin = new Vector3(0, 0.4f, 0),
             };
             //drawables.Add(d);
-            drawables.Add(s);
+            //drawables.Add(s);
+            drawables.Add(new DrawableTriangle
+            {
+                Position = new Vector3(0, 0, 1.2f),
+                Rotation = new Vector3(0, 0, 0)
+            });
         }
 
         public void Render(bool Wireframe = false)
         {
+            var visualiseBounds = false;
             watch.Restart();
 
             output.Clear();
@@ -102,7 +108,7 @@ namespace Konsole.Graphics.Rendering
             {
                 Buffer = new Charsel[Height, Width];
                 output.Append("\u001b[?25l");
-                projectionMatrix = Matrix4x4.CreatePerspectiveFieldOfView(1.5708f, Width / (float) Height, 1, float.PositiveInfinity);
+                projectionMatrix = Matrix4x4.CreatePerspectiveFieldOfView(1.5708f, Width / (float)Height, 1, float.PositiveInfinity);
                 bufferInvalid = false;
             }
 
@@ -141,21 +147,24 @@ namespace Konsole.Graphics.Rendering
 
                     V4Extensions.Bounds(pos1, pos2, pos3, out Vector2 BoundsStart, out Vector2 BoundsEnd);
 
-                    for (int y = (int)BoundsStart.Y; y < (int)BoundsEnd.Y; y++)
-                        for (int x = (int)BoundsStart.X; x < (int)BoundsEnd.X; x++)
+                    for (var y = (int)BoundsStart.Y; y < (int)BoundsEnd.Y; y++)
+                        for (var x = (int)BoundsStart.X; x < (int)BoundsEnd.X; x++)
                         {
-                            var sample = new Vector2(x + 0.5f, y + 0.5f);
-                            if (V4Extensions.Edge(pos1, pos2, sample) &&
-                                V4Extensions.Edge(pos2, pos3, sample) &&
-                                V4Extensions.Edge(pos3, pos1, sample))
+                            if (visualiseBounds)
                             {
-                                var weights = V4Extensions.Barycentric(pos1, pos2, pos3, new Vector2(x + 0.5f, y + 0.5f));
+                                Buffer[y, x].Char = 'X';
+                                Buffer[y, x].Colour = Colour3.FromBytes(48, 224, 96);
+                            }
+                            var sample = new Vector2(x + 0.5f, y + 0.5f);
+                            var weights = V4Extensions.Barycentric(pos1, pos2, pos3, new Vector2(x + 0.5f, y + 0.5f));
+                            if (weights.X >= 0 && weights.Y >= 0 && weights.Z >= 0)
+                            {
                                 var depth = (pos1.Z * weights.X) + (pos2.Z * weights.Y) + (pos3.Z * weights.Z);
 
                                 if (Buffer[y, x].Depth == null || Buffer[y, x].Depth > depth)
                                 {
                                     Buffer[y, x].Char = '█';
-                                    Buffer[y, x].Colour = d.Mesh.Colour;
+                                    Buffer[y, x].Colour = new Colour3(1 * weights.X, 1 * weights.Y, 1 * weights.Z);
                                     Buffer[y, x].Depth = depth;
                                 }
                             }

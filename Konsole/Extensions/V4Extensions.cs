@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using System.Linq;
+using System;
 
 namespace Konsole.Extensions
 {
@@ -16,21 +17,21 @@ namespace Konsole.Extensions
         }
         public static void Bounds(Vector4 a, Vector4 b, Vector4 c, out Vector2 TopLeft, out Vector2 BottomRight)
         {
-            if (a.X < b.X) TopLeft.X = a.X;
-            else if (b.X < c.X) TopLeft.X = b.X;
-            else TopLeft.X = c.X;
+            if (a.X < b.X) TopLeft.X = MathF.Floor(a.X);
+            else if (b.X < c.X) TopLeft.X = MathF.Floor(b.X);
+            else TopLeft.X = MathF.Floor(c.X);
 
-            if (a.Y < b.Y) TopLeft.Y = a.Y;
-            else if (b.Y < c.Y) TopLeft.Y = b.Y;
-            else TopLeft.Y = c.Y;
+            if (a.Y < b.Y) TopLeft.Y = MathF.Floor(a.Y);
+            else if (b.Y < c.Y) TopLeft.Y = MathF.Floor(b.Y);
+            else TopLeft.Y = MathF.Floor(c.Y);
 
-            if (a.X > b.X) BottomRight.X = a.X;
-            else if (b.X > c.X) BottomRight.X = b.X;
-            else BottomRight.X = c.X;
+            if (a.X > b.X) BottomRight.X = MathF.Ceiling(a.X);
+            else if (b.X > c.X) BottomRight.X = MathF.Ceiling(b.X);
+            else BottomRight.X = MathF.Ceiling(c.X);
 
-            if (a.Y > b.Y) BottomRight.Y = a.Y;
-            else if (b.Y > c.Y) BottomRight.Y = b.Y;
-            else BottomRight.Y = c.Y;
+            if (a.Y > b.Y) BottomRight.Y = MathF.Ceiling(a.Y);
+            else if (b.Y > c.Y) BottomRight.Y = MathF.Ceiling(b.Y);
+            else BottomRight.Y = MathF.Ceiling(c.Y);
         }
         /// <summary>
         /// Remaps the <see cref="Vector4"/>'s X and Y coordinate to Pixel Space
@@ -51,11 +52,23 @@ namespace Konsole.Extensions
         /// <param name="b"></param>
         /// <param name="c"></param>
         /// <returns></returns>
-        public static Vector3 Barycentric(Vector4 a, Vector4 b, Vector4 c, Vector2 Point)
+        public static Vector3 Barycentric(Vector4 v1, Vector4 v2, Vector4 v3, Vector2 Point)
         {
-            float weight1 = (b.Y - c.Y) * (Point.X - c.X) + (c.X - b.X) * (Point.Y - c.Y) / (b.Y - c.Y) * (a.X - c.X) + (c.X - b.X) * (a.Y - c.Y);
-            float weight2 = (c.Y - a.Y) * (Point.X - c.X) + (a.X - c.X) * (Point.Y - c.Y) / (b.Y - c.Y) * (a.X - c.X) + (c.X - b.X) * (a.Y - c.Y);
-            float weight3 = 1 - weight1 - weight2;
+            Vector2 a = new Vector2(v2.X, v2.Y) - new Vector2(v3.X, v3.Y);
+            Vector2 b = new Vector2(v1.X, v1.Y) - new Vector2(v3.X, v3.Y);
+            Vector2 c = Point - new Vector2(v3.X, v3.Y);
+
+            float aLen = a.X * a.X + a.Y * a.Y;
+            float bLen = b.X * b.X + b.Y * b.Y;
+
+            float ab = a.X * b.X + a.Y * b.Y;
+            float ac = a.X * c.X + a.Y * c.Y;
+            float bc = b.X * c.X + b.Y * c.Y;
+
+            float d = aLen * bLen - ab * ab;
+            float weight1 = (aLen * bc - ab * ac) / d;
+            float weight2 = (bLen * ac - ab * bc) / d;
+            float weight3 = 1f - weight1 - weight2;
             return new Vector3(weight1, weight2, weight3);
         }
     }
