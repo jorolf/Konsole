@@ -35,6 +35,12 @@ namespace Konsole.Graphics.Colour
         {
             return new Colour3(a.R * num, a.R * num, a.R * num);
         }
+
+        public static Colour3 operator /(Colour3 a, float num)
+        {
+            return new Colour3(a.R / num, a.R / num, a.R / num);
+        }
+
         public static Colour3 operator +(Colour3 a, Colour3 b)
         {
             return new Colour3(a.R + b.R, a.G + b.G, a.B + b.B);

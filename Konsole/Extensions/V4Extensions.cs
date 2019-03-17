@@ -13,7 +13,7 @@ namespace Konsole.Extensions
             if (Wireframe)
                 return edge == 0;
             else
-                return edge > 0;
+                return edge >= 0;
         }
         public static void Bounds(Vector4 a, Vector4 b, Vector4 c, out Vector2 TopLeft, out Vector2 BottomRight)
         {
