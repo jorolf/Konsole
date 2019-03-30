@@ -7,6 +7,5 @@ namespace Konsole.Entities.Components
     public class PositionalComponent : Component
     {
         public override long ID => (long)IDs.Positional;
-
     }
 }
