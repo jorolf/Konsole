@@ -11,5 +11,6 @@ namespace Konsole.Graphics.Drawables
         /// TEMPORARY WORKAROUND, THIS NEEDS TO BE CHANGED.
         /// </summary>
         public Colour3 Colour;
+        public Texture Texture;
     }
 }

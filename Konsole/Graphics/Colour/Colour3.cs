@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Text;
 
 namespace Konsole.Graphics.Colour
@@ -9,9 +10,10 @@ namespace Konsole.Graphics.Colour
     /// </summary>
     public struct Colour3
     {
-        public float R;
-        public float G;
-        public float B;
+        private Vector3 colour;
+        public float R { get => colour.X; set => colour.X = value; }
+        public float G { get => colour.Y; set => colour.X = value; }
+        public float B { get => colour.Z; set => colour.Z = value; }
 
         /// <summary>
         /// Constructs the Colour3 from floats.
@@ -21,9 +23,7 @@ namespace Konsole.Graphics.Colour
         /// <param name="b"></param>
         public Colour3(float r, float g, float b)
         {
-            R = r;
-            G = g;
-            B = b;
+            colour = new Vector3(r, g, b);
         }
 
         public static Colour3 FromBytes(byte r, byte g, byte b)
@@ -33,17 +33,22 @@ namespace Konsole.Graphics.Colour
 
         public static Colour3 operator *(Colour3 a, float num)
         {
-            return new Colour3(a.R * num, a.R * num, a.R * num);
+            return new Colour3(a.R * num, a.G * num, a.B * num);
         }
 
         public static Colour3 operator /(Colour3 a, float num)
         {
-            return new Colour3(a.R / num, a.R / num, a.R / num);
+            return new Colour3(a.R / num, a.G / num, a.B / num);
         }
 
         public static Colour3 operator +(Colour3 a, Colour3 b)
         {
             return new Colour3(a.R + b.R, a.G + b.G, a.B + b.B);
+        }
+
+        public static Colour3 operator *(Colour3 a, Colour3 b)
+        {
+            return new Colour3(a.R * b.R, a.G * b.G, a.B * b.B);
         }
 
         /// <summary>

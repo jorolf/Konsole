@@ -16,6 +16,7 @@ namespace Konsole.Graphics.Rendering
 {
     public class FrameBuffer
     {
+        private readonly string directory = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar;
         private readonly StringBuilder output = new StringBuilder();
 
         public Charsel[,] Buffer { get; private set; }
@@ -65,36 +66,63 @@ namespace Konsole.Graphics.Rendering
             bufferInvalid = true;
             consoleWriter = writeAction;
 
+            /*
             Drawable d = new Drawable
             {
                 Mesh = new Mesh
                 {
-                    Triangles = OBJParser.ParseFile(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar + "player.obj", Properties.FlipY),
-                    Colour = new Colour3(1f, 1f, 1f)
+                    Triangles = OBJParser.ParseFile(directory + "player.obj", Properties.FlipY),
+                    Colour = new Colour3(1f, 1f, 1f),
+                    Texture = new Texture()
+                    {
+                        ColourData = new Colour3[,] { { new Colour3(1,1,1) } }
+                    }
                 },
+
                 Scale = new Vector3(0.4f),
                 Position = new Vector3(0,0,1f),
                 Origin = new Vector3(0,1.2f,0),
-                Rotation = new Vector3(MathF.PI / 2,0,0)
+                //Rotation = new Vector3(MathF.PI / 2,0,0)
             };
             Drawable s = new Drawable
             {
                 Mesh = new Mesh
                 {
-                    Triangles = OBJParser.ParseFile(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar + "shrek.obj", Properties.FlipY),
+                    Triangles = OBJParser.ParseFile(directory + "shrek.obj", Properties.FlipY),
                     Colour = Colour3.FromBytes(123, 186, 46)
                 },
                 Scale = new Vector3(0.66f),
                 Position = new Vector3(0, 0, 3f),
                 Origin = new Vector3(0, 0.4f, 0),
             };
+            */
             //drawables.Add(d);
             //drawables.Add(s);
-            drawables.Add(new DrawableTriangle
+
+            var m = new Mesh();
+            m.Triangles = new Triangle[]
             {
-                Origin = new Vector3(0, 0f, 0),
-                Position = new Vector3(0, 0, 2.2f),
-                Rotation = new Vector3(0, MathF.PI / 2.2f, 0)
+                new Triangle(
+                    new Vertex(new Vector3(0), Vector3.Zero, new Vector2(0)),
+                    new Vertex(new Vector3(0, 1, 0),  Vector3.Zero, new Vector2(0, 1)),
+                    new Vertex(new Vector3(1, 0, 0), Vector3.Zero, new Vector2(1, 0))
+                ),
+
+                new Triangle(
+                    new Vertex(new Vector3(0, 1, 0),  Vector3.Zero, new Vector2(0, 1)),
+                    new Vertex(new Vector3(1, 0, 0), Vector3.Zero, new Vector2(1, 0)),
+                    new Vertex(new Vector3(1, 1, 0), Vector3.Zero, new Vector2(1))
+
+                )
+            };
+            m.Texture = new ImageTexture(directory + "testImage");
+            drawables.Add(new Drawable
+            {
+
+                Mesh = m,
+                Position = new Vector3(0, 0, 1),
+                Origin = new Vector3(-0.5f, -0.5f, 0),
+                //Rotation = new Vector3(MathF.PI, 0, 0)
             });
         }
 
@@ -118,8 +146,7 @@ namespace Konsole.Graphics.Rendering
                 Colour = new Colour3(0, 0, 0),
                 Depth = null
             });
-
-            drawables[0].Rotation = new Vector3((float)clock.Time * 2, 0, 0);
+            drawables[0].Rotation = new Vector3((float)clock.Time, 0, 0);
             foreach (Drawable d in drawables)
             {
                 foreach (Triangle t in d.Mesh.Triangles)
@@ -156,18 +183,25 @@ namespace Konsole.Graphics.Rendering
                             var sample = new Vector2(x + 0.5f, y + 0.5f);
 
                             bool CW = V4Extensions.Edge(pos1, pos2, sample) && V4Extensions.Edge(pos2, pos3, sample) && V4Extensions.Edge(pos3, pos1, sample);
-                            bool CCW = !V4Extensions.Edge(pos1, pos2, sample) && !V4Extensions.Edge(pos2, pos3, sample) && !V4Extensions.Edge(pos3, pos1, sample);
+                            bool CCW = V4Extensions.Edge(pos1, pos3, sample) && V4Extensions.Edge(pos3, pos2, sample) && V4Extensions.Edge(pos2, pos1, sample);
 
                             if (CW || CCW)
                             {
                                 var weights = V4Extensions.Barycentric(pos1, pos2, pos3, new Vector2(x + 0.5f, y + 0.5f));
                                 var depth = (pos1.Z * weights.X) + (pos2.Z * weights.Y) + (pos3.Z * weights.Z);
 
-                                if (Buffer[y, x].Depth == null && depth > 0 || Buffer[y, x].Depth > depth && depth > 0f)
+                                if (Buffer[y, x].Depth == null && depth > 0f || Buffer[y, x].Depth > depth && depth > 0f)
                                 {
+                                    Vector2 sampleUV = new Vector2(
+                                        (t.A.UV.X / pos1.Z * weights.X * depth) + (t.B.UV.X / pos2.Z * weights.Y * depth) + (t.C.UV.X / pos3.Z * weights.Z * depth),
+                                        (t.A.UV.Y / pos1.Z * weights.X * depth) + (t.B.UV.Y / pos2.Z * weights.Y * depth) + (t.C.UV.Y / pos3.Z * weights.Z * depth)
+                                    );
+                                    Vector2 textureSample = new Vector2(Math.Clamp(sampleUV.X, 0, 1) * (d.Mesh.Texture.Width - 1), Math.Clamp(sampleUV.Y, 0, 1) * (d.Mesh.Texture.Height - 1));
                                     Buffer[y, x].Char = '█';
-                                    Buffer[y, x].Colour = new Colour3(1 / pos1.Z * weights.X * depth, 1 / pos2.Z * weights.Y * depth, 1 / pos3.Z * weights.Z * depth);
-                                    //Buffer[y, x].Colour = new Colour3(1, 1, 1);
+                                    if (CW)
+                                        Buffer[y, x].Colour = d.Mesh.Texture[(int)textureSample.X, (int)textureSample.Y] * new Colour3(0, 1f, 1f);
+                                    else
+                                        Buffer[y, x].Colour = d.Mesh.Texture[(int)textureSample.X, (int)textureSample.Y] * new Colour3(1, 0f, 1f);
                                     Buffer[y, x].Depth = depth;
                                 }
                             }

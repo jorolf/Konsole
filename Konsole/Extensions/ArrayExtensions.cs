@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Konsole.Extensions
@@ -12,33 +13,11 @@ namespace Konsole.Extensions
                 for (int a = 0; a < array.GetLength(1); a++)
                     array[i, a] = obj;
         }
-        public static uint ToUint(this byte[] array)
+        public static unsafe uint ToUint(this byte[] array)
         {
-            if (array.Length != 4)
-                throw new ArgumentException("The byte array must contain four bytes");
-            else
-            {
-                uint[] ints = new uint[]
-                {
-                    array[3],
-                    array[2],
-                    array[1],
-                    array[0]
-                };
-                byte count = 0;
-                for (int i = 0; i < 4; i++)
-                {
-                    ints[i] = ints[i] << (8 * count);
-                    count++;
-                }
-
-                uint value = 0;
-
-                foreach (uint u in ints)
-                    value = value | u;
-
-                return value;
-            }
+            fixed (byte* value = &array[0])
+                return *(uint*)value;           
         }
+             
     }
 }
