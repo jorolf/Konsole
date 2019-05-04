@@ -172,11 +172,15 @@ namespace Konsole.Graphics.Rendering
                     pos2 = pos2.ToPixel(Width, Height);
                     pos3 = pos3.ToPixel(Width, Height);
 
+                    //For some reason this breaks rendering a lot.
                     V4Extensions.Bounds(pos1, pos2, pos3, out Vector2 BoundsStart, out Vector2 BoundsEnd);
 
-                    for (var y = (int)BoundsStart.Y; y < (int)BoundsEnd.Y; y++)
-                        for (var x = (int)BoundsStart.X; x < (int)BoundsEnd.X; x++)
+                    for (var y = 0; y < Height; y++)
+                        for (var x = 0; x < Width; x++)
                         {
+                            //Buffer[y, x].Char = 'X';
+                            //Buffer[y, x].Colour = new Colour3(1, 1, 1);
+                            //Buffer[y, x].Depth = null;
                             if (x >= Width || y >= Height || x < 0 || y < 0)
                                 continue;
 
@@ -199,9 +203,9 @@ namespace Konsole.Graphics.Rendering
                                     Vector2 textureSample = new Vector2(Math.Clamp(sampleUV.X, 0, 1) * (d.Mesh.Texture.Width - 1), Math.Clamp(sampleUV.Y, 0, 1) * (d.Mesh.Texture.Height - 1));
                                     Buffer[y, x].Char = '█';
                                     if (CW)
-                                        Buffer[y, x].Colour = d.Mesh.Texture[(int)textureSample.X, (int)textureSample.Y] * new Colour3(0, 1f, 1f);
+                                        Buffer[y, x].Colour = d.Mesh.Texture[(int)textureSample.X, (int)textureSample.Y] * new Colour3(0.4f, 1f, 1f);
                                     else
-                                        Buffer[y, x].Colour = d.Mesh.Texture[(int)textureSample.X, (int)textureSample.Y] * new Colour3(1, 0f, 1f);
+                                        Buffer[y, x].Colour = d.Mesh.Texture[(int)textureSample.X, (int)textureSample.Y] * new Colour3(1, 0.4f, 1f);
                                     Buffer[y, x].Depth = depth;
                                 }
                             }
