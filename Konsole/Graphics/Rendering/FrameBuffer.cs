@@ -180,7 +180,6 @@ namespace Konsole.Graphics.Rendering
                         for (var y = (int)BoundsStart.Y; y < (int)BoundsEnd.Y; y++)
                             for (var x = (int)BoundsStart.X; x < (int)BoundsEnd.X; x++)
                             {
-
                                 if (x >= Width || y >= Height || x < 0 || y < 0)
                                     continue;
 
