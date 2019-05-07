@@ -1,4 +1,6 @@
-﻿using Konsole.Graphics.Primitives;
+﻿using Konsole.Graphics.Drawables;
+using Konsole.Graphics.Primitives;
+using System;
 using System.Globalization;
 using System.IO;
 using System.Numerics;
@@ -7,13 +9,15 @@ namespace Konsole.IO
 {
     public static class OBJParser
     {
-        public static Triangle[] ParseFile(string path, Properties properties = Properties.Default)
+        public static Mesh[] ParseFile(string path, Properties properties = Properties.Default)
         {
             //Stopwatch watch = new Stopwatch();
             //watch.Start();
             int pIndex = 0;
             int nIndex = 0;
+            int uvIndex = 0;
             int fIndex = 0;
+            int meshIndex = 0;
             StreamReader file = new StreamReader(path);
             var read = true;
             while (read)
@@ -23,8 +27,12 @@ namespace Konsole.IO
                     read = false;
                 else if (t.StartsWith("v "))
                     pIndex++;
+                else if (t.StartsWith("s"))
+                    meshIndex++;
                 else if (t.StartsWith("vn"))
                     nIndex++;
+                else if (t.StartsWith("vt"))
+                    uvIndex++;
                 else if (t.StartsWith("f"))
                     fIndex++;
 
@@ -32,18 +40,42 @@ namespace Konsole.IO
 
             Vector3[] Positions = new Vector3[pIndex];
             Vector3[] Normals = new Vector3[nIndex];
+            Vector2[] UVs = new Vector2[uvIndex];
             Triangle[] Triangles = new Triangle[fIndex];
+            Mesh[] Meshes = new Mesh[meshIndex];
             //Console.WriteLine($"Counting has finished in {watch.ElapsedMilliseconds}ms.");
             pIndex = 0;
             nIndex = 0;
             fIndex = 0;
+            uvIndex = 0;
+            meshIndex = -1;
+            var previousMesh = 0;
             file.BaseStream.Position = 0;
             read = true;
             while (read)
             {
+
+                void meshTriangles()
+                {
+                    Span<Triangle> tris = new Span<Triangle>(Triangles).Slice(previousMesh, fIndex - previousMesh);
+                    Meshes[meshIndex] = new Mesh()
+                    {
+                        Triangles = tris.ToArray()
+                    };
+                    previousMesh = fIndex;
+                }
                 var t = file.ReadLine();
                 if (t == null)
+                {
                     read = false;
+                    meshTriangles();
+                }
+                else if (t.StartsWith("s"))
+                {
+                    if (meshIndex != -1)
+                        meshTriangles();
+                    meshIndex++;
+                }
                 else if (t.StartsWith("vn"))
                 {
                     string[] temp = t.Split(' ');
@@ -52,6 +84,15 @@ namespace Konsole.IO
                         float.Parse(temp[2], CultureInfo.InvariantCulture),
                         float.Parse(temp[3], CultureInfo.InvariantCulture));
                     nIndex++;
+                    temp = null;
+                }
+                else if (t.StartsWith("vt"))
+                {
+                    string[] temp = t.Split(' ');
+                    UVs[uvIndex] = new Vector2(
+                        float.Parse(temp[1], CultureInfo.InvariantCulture),
+                        float.Parse(temp[2], CultureInfo.InvariantCulture));
+                    uvIndex++;
                     temp = null;
                 }
                 else if (t.StartsWith("v "))
@@ -89,17 +130,18 @@ namespace Konsole.IO
 
                     if (Temp.Length == 9)
                         Triangles[fIndex] = new Triangle(
-                            new Vertex(Positions[Temp[0]], Vector3.Zero, Vector2.Zero),
-                            new Vertex(Positions[Temp[3]], Vector3.Zero, Vector2.Zero),
-                            new Vertex(Positions[Temp[6]], Vector3.Zero, Vector2.Zero)
+                            new Vertex(Positions[Temp[0]], Normals[Temp[2]], UVs[Temp[1]]),
+                            new Vertex(Positions[Temp[3]], Normals[Temp[5]], UVs[Temp[4]]),
+                            new Vertex(Positions[Temp[6]], Normals[Temp[8]], UVs[Temp[7]])
                         );
                     else
                         Triangles[fIndex] = new Triangle(
-                            new Vertex(Positions[Temp[0]], Vector3.Zero, Vector2.Zero),
-                            new Vertex(Positions[Temp[2]], Vector3.Zero, Vector2.Zero),
-                            new Vertex(Positions[Temp[4]], Vector3.Zero, Vector2.Zero)
+                            new Vertex(Positions[Temp[0]], Vector3.Zero, UVs[Temp[1]]),
+                            new Vertex(Positions[Temp[2]], Vector3.Zero, UVs[Temp[3]]),
+                            new Vertex(Positions[Temp[4]], Vector3.Zero, UVs[Temp[5]])
                         );
-                    fIndex++;
+                    if (fIndex != Triangles.Length - 1)
+                        fIndex++;
                     Temp = null;
                 }
 
@@ -108,9 +150,10 @@ namespace Konsole.IO
             //watch.Stop();
             //Console.WriteLine($"Parsing has finished in {watch.ElapsedMilliseconds}");
 
-            return Triangles;
+            return Meshes;
         }
     }
+    [Flags]
     public enum Properties
     {
         Default = 0,

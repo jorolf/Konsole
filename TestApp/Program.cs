@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using Konsole;
 using Konsole.Extensions;
+using Konsole.Graphics.Colour;
 using Konsole.IO;
 
 namespace TestApp
@@ -14,7 +16,6 @@ namespace TestApp
             var path = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar;
 
             KonsoleWindow window = new KonsoleWindow();
-            Console.ReadLine();
         }
     }
 }

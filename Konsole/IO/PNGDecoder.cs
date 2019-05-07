@@ -8,7 +8,7 @@ using System.Text;
 namespace Konsole.IO
 {
     /// <summary>
-    /// Don't use it because it's not finished nor do I plan on finishing it right now.
+    /// Not finished, planned as an eventual replacement to the <see cref="System.Drawing"/> nuget package.
     /// </summary>
     [Obsolete]
     public static class PNGDecoder
