@@ -1,8 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using System.Text;
-
-namespace Konsole.Extensions
+﻿namespace Konsole.Extensions
 {
     public static class ArrayExtensions
     {
@@ -16,8 +12,7 @@ namespace Konsole.Extensions
         public static unsafe uint ToUint(this byte[] array)
         {
             fixed (byte* value = &array[0])
-                return *(uint*)value;           
+                return *(uint*)value;
         }
-             
     }
 }

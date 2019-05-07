@@ -119,5 +119,5 @@ namespace Konsole.Graphics.Colour
         public static Colour3 KozianPurple => new Colour3(166 / 255f, 61 / 255f, 198 / 255f);
 
         #endregion
-    };
+    }
 }
