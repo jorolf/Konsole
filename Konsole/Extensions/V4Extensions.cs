@@ -17,21 +17,11 @@ namespace Konsole.Extensions
         }
         public static void Bounds(Vector4 a, Vector4 b, Vector4 c, out Vector2 TopLeft, out Vector2 BottomRight)
         {
-            if (a.X < b.X) TopLeft.X = MathF.Floor(a.X);
-            else if (b.X < c.X) TopLeft.X = MathF.Floor(b.X);
-            else TopLeft.X = MathF.Floor(c.X);
+            TopLeft.X = (int)MathF.Round(MathF.Min(a.X, MathF.Min(b.X, c.X)), MidpointRounding.ToEven);
+            TopLeft.Y = (int)MathF.Round(MathF.Min(a.Y, MathF.Min(b.Y, c.Y)), MidpointRounding.ToEven);
+            BottomRight.X = (int)MathF.Round(MathF.Max(a.X, MathF.Max(b.X, c.X)), MidpointRounding.ToEven);
+            BottomRight.Y = (int)MathF.Round(MathF.Max(a.Y, MathF.Max(b.Y, c.Y)), MidpointRounding.ToEven);
 
-            if (a.Y < b.Y) TopLeft.Y = MathF.Floor(a.Y);
-            else if (b.Y < c.Y) TopLeft.Y = MathF.Floor(b.Y);
-            else TopLeft.Y = MathF.Floor(c.Y);
-
-            if (a.X > b.X) BottomRight.X = MathF.Ceiling(a.X);
-            else if (b.X > c.X) BottomRight.X = MathF.Ceiling(b.X);
-            else BottomRight.X = MathF.Ceiling(c.X);
-
-            if (a.Y > b.Y) BottomRight.Y = MathF.Ceiling(a.Y);
-            else if (b.Y > c.Y) BottomRight.Y = MathF.Ceiling(b.Y);
-            else BottomRight.Y = MathF.Ceiling(c.Y);
         }
         /// <summary>
         /// Remaps the <see cref="Vector4"/>'s X and Y coordinate to Pixel Space

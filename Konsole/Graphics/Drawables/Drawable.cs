@@ -11,6 +11,6 @@ namespace Konsole.Graphics.Drawables
 
         public Matrix4x4 DrawableMatrix => Matrix4x4.CreateTranslation(Origin) * Matrix4x4.CreateScale(Scale) * Matrix4x4.CreateFromYawPitchRoll(Rotation.X, Rotation.Y, Rotation.Z) * Matrix4x4.CreateTranslation(Position);
 
-        public Mesh Mesh { get; set; } = new Mesh();
+        public Mesh[] Meshes { get; set; } = new Mesh[] { new Mesh() };
     }
 }

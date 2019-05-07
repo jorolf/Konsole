@@ -7,7 +7,7 @@ namespace Konsole.Graphics.Drawables
     {
         public DrawableTriangle()
         {
-            Mesh.Triangles = new Triangle[]
+            Meshes[0].Triangles = new Triangle[]
             {
                 new Triangle(
                     new Vertex(new Vector3(0,0,0), Vector3.Zero, Vector2.Zero),
