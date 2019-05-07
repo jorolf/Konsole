@@ -87,7 +87,6 @@ namespace Konsole.Graphics.Rendering
             */
             Drawable s = new Drawable
             {
-
                 Meshes = OBJParser.ParseFile(directory + "normalShrek.obj", Properties.FlipY),
                 Scale = new Vector3(1f),
                 Position = new Vector3(0, 0, 1.3f),
@@ -118,7 +117,6 @@ namespace Konsole.Graphics.Rendering
             };
             m.Texture = new ImageTexture(directory + "testImage");
 
-
             /*
             drawables.Add(new Drawable
             {
@@ -129,8 +127,6 @@ namespace Konsole.Graphics.Rendering
                 //Rotation = new Vector3(MathF.PI, 0, 0)
             });
             */
-
-
         }
 
         public void Render(bool Wireframe = false)
@@ -184,9 +180,7 @@ namespace Konsole.Graphics.Rendering
                         for (var y = (int)BoundsStart.Y; y < (int)BoundsEnd.Y; y++)
                             for (var x = (int)BoundsStart.X; x < (int)BoundsEnd.X; x++)
                             {
-                                //Buffer[y, x].Char = 'X';
-                                //Buffer[y, x].Colour = new Colour3(1, 1, 1);
-                                //Buffer[y, x].Depth = null;
+
                                 if (x >= Width || y >= Height || x < 0 || y < 0)
                                     continue;
 
@@ -232,7 +226,6 @@ namespace Konsole.Graphics.Rendering
                                             SampleY = (int)(Math.Abs(sampleUV.Y) * (m.Texture.Height - 1));
                                         else
                                             SampleY = (int)((1 - sampleUV.Y) * (m.Texture.Height - 1));
-
 
                                         Buffer[y, x].Char = '█';
                                         Buffer[y, x].Colour = new Colour3(1) * Math.Clamp(Vector3.Dot(sampleNormal, new Vector3(0, 1, 0.8f)), 0, 1) * m.Texture[SampleX, SampleY];
