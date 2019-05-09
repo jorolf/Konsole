@@ -1,17 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Numerics;
-using System.Text;
 
 namespace Konsole.Graphics.Colour
 {
-#pragma warning disable CS0660
-#pragma warning disable CS0661
+#pragma warning disable CS0660, CS0661
     /// <summary>
     /// Stores the RGB values in form of a float ranging from 0-1 for 0-255
     /// </summary>
     public struct Colour3 : IEquatable<Colour3>, IEquatable<Vector3>
     {
+
         private Vector3 colour;
         public float R { get => colour.X; set => colour.X = value; }
         public float G { get => colour.Y; set => colour.X = value; }
@@ -67,7 +65,17 @@ namespace Konsole.Graphics.Colour
         {
             return a.Equals(b);
         }
+
         public static bool operator !=(Colour3 a, Colour3 b)
+        {
+            return !a.Equals(b);
+        }
+
+        public static bool operator ==(Colour3 a, Vector3 b)
+        {
+            return a.Equals(b);
+        }
+        public static bool operator !=(Colour3 a, Vector3 b)
         {
             return !a.Equals(b);
         }

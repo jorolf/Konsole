@@ -1,7 +1,6 @@
-﻿using System;
-using System.Diagnostics;
-using Konsole.Graphics.Rendering;
+﻿using Konsole.Graphics.Rendering;
 using Konsole.OS;
+using System;
 
 namespace Konsole
 {
@@ -12,7 +11,7 @@ namespace Konsole
             Console.WriteLine($"Height: {Console.WindowHeight}, Width: {Console.WindowWidth}");
             Console.WriteLine("Initializing framebuffer & loading objects");
 
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            if (System.Environment.OSVersion.Platform == PlatformID.Win32NT)
                 Windows.EnableWindowsColour();
 
             var buffer = new FrameBuffer(Console.Write);

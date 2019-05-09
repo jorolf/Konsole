@@ -11,12 +11,12 @@ using System.IO;
 using System.Numerics;
 using System.Reflection;
 using System.Text;
+using static Konsole.Globals;
 
 namespace Konsole.Graphics.Rendering
 {
     public class FrameBuffer
     {
-        private readonly string directory = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar;
         private readonly StringBuilder output = new StringBuilder();
 
         public Charsel[,] Buffer { get; private set; }
@@ -87,14 +87,14 @@ namespace Konsole.Graphics.Rendering
             */
             Drawable s = new Drawable
             {
-                Meshes = OBJParser.ParseFile(directory + "normalShrek.obj", Properties.FlipY),
+                Meshes = OBJParser.ParseFile(GameDirectory + "normalShrek.obj", Properties.FlipY),
                 Scale = new Vector3(1f),
                 Position = new Vector3(0, 0, 1.3f),
                 Origin = new Vector3(0, 0.4f, 0),
                 Rotation = new Vector3(MathF.PI, 0, 0)
             };
-            s.Meshes[1].Texture = new ImageTexture(directory + "Shrek");
-            s.Meshes[0].Texture = new ImageTexture(directory + "shrekshirt");
+            s.Meshes[1].Texture = new ImageTexture(GameDirectory + "Shrek");
+            s.Meshes[0].Texture = new ImageTexture(GameDirectory + "shrekshirt");
 
             //drawables.Add(d);
             drawables.Add(s);
@@ -115,7 +115,7 @@ namespace Konsole.Graphics.Rendering
 
                 )
             };
-            m.Texture = new ImageTexture(directory + "testImage");
+            m.Texture = new ImageTexture(GameDirectory + "testImage");
 
             /*
             drawables.Add(new Drawable
@@ -207,24 +207,8 @@ namespace Konsole.Graphics.Rendering
                                         int SampleX;
                                         int SampleY;
 
-                                        //This needs to be cleaned up, it's horrible.
-                                        if (sampleUV.X > 1)
-                                            SampleX = (int)((sampleUV.X - (int)sampleUV.X) * (m.Texture.Width - 1));
-                                        else if (sampleUV.X < -1)
-                                            SampleX = (int)((sampleUV.X + (int)sampleUV.X + 1) * (m.Texture.Width - 1));
-                                        else if (sampleUV.X < 0)
-                                            SampleX = (int)((sampleUV.X + 1) * (m.Texture.Width - 1));
-                                        else
-                                            SampleX = (int)(sampleUV.X * (m.Texture.Width - 1));
-
-                                        if (sampleUV.Y > 1)
-                                            SampleY = (int)((1 - (sampleUV.Y - (int)sampleUV.Y)) * (m.Texture.Height - 1));
-                                        else if (sampleUV.Y < -1)
-                                            SampleY = (int)((sampleUV.Y + (int)sampleUV.X) * (m.Texture.Height - 1));
-                                        else if (sampleUV.Y < 0)
-                                            SampleY = (int)(Math.Abs(sampleUV.Y) * (m.Texture.Height - 1));
-                                        else
-                                            SampleY = (int)((1 - sampleUV.Y) * (m.Texture.Height - 1));
+                                        SampleX = (int)((sampleUV.X % 1 + 1) % 1 * (m.Texture.Width - 1));
+                                        SampleY = (int)((-sampleUV.Y % 1 + 1) % 1 * (m.Texture.Height - 1));
 
                                         Buffer[y, x].Char = '█';
                                         Buffer[y, x].Colour = new Colour3(1) * Math.Clamp(Vector3.Dot(sampleNormal, new Vector3(0, 1, 0.8f)), 0, 1) * m.Texture[SampleX, SampleY];
@@ -258,7 +242,7 @@ namespace Konsole.Graphics.Rendering
             var renderTimeMs = watch.ElapsedMilliseconds;
             consoleWriter(output.ToString());
             watch.Stop();
-            Debug.WriteLine($"Render time: {renderTimeMs}ms. Draw time: {watch.ElapsedMilliseconds - renderTimeMs}ms. Total time: {watch.ElapsedMilliseconds}ms FPS: {1000f / watch.ElapsedMilliseconds}.");
+            //Debug.WriteLine($"Render time: {renderTimeMs}ms. Draw time: {watch.ElapsedMilliseconds - renderTimeMs}ms. Total time: {watch.ElapsedMilliseconds}ms FPS: {1000f / watch.ElapsedMilliseconds}.");
         }
     }
 }
