@@ -7,9 +7,7 @@ using Konsole.IO;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Numerics;
-using System.Reflection;
 using System.Text;
 using static Konsole.Globals;
 
@@ -88,8 +86,8 @@ namespace Konsole.Graphics.Rendering
             Drawable s = new Drawable
             {
                 Meshes = OBJParser.ParseFile(GameDirectory + "normalShrek.obj", Properties.FlipY),
-                Scale = new Vector3(1f),
-                Position = new Vector3(0, 0, 1.3f),
+                Scale = new Vector3(1.1f),
+                Position = new Vector3(0, 0, 0.8f),
                 Origin = new Vector3(0, 0.4f, 0),
                 Rotation = new Vector3(MathF.PI, 0, 0)
             };
@@ -242,7 +240,7 @@ namespace Konsole.Graphics.Rendering
             var renderTimeMs = watch.ElapsedMilliseconds;
             consoleWriter(output.ToString());
             watch.Stop();
-            //Debug.WriteLine($"Render time: {renderTimeMs}ms. Draw time: {watch.ElapsedMilliseconds - renderTimeMs}ms. Total time: {watch.ElapsedMilliseconds}ms FPS: {1000f / watch.ElapsedMilliseconds}.");
+            Debug.WriteLine($"Render time: {renderTimeMs}ms. Draw time: {watch.ElapsedMilliseconds - renderTimeMs}ms. Total time: {watch.ElapsedMilliseconds}ms FPS: {1000f / watch.ElapsedMilliseconds}.");
         }
     }
 }

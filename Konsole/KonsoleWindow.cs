@@ -11,7 +11,7 @@ namespace Konsole
             Console.WriteLine($"Height: {Console.WindowHeight}, Width: {Console.WindowWidth}");
             Console.WriteLine("Initializing framebuffer & loading objects");
 
-            if (System.Environment.OSVersion.Platform == PlatformID.Win32NT)
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
                 Windows.EnableWindowsColour();
 
             var buffer = new FrameBuffer(Console.Write);
