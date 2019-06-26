@@ -17,7 +17,8 @@ namespace Konsole.Graphics.Rendering
     {
         private readonly StringBuilder output = new StringBuilder();
 
-        public Charsel[,] Buffer { get; private set; }
+        private Charsel[,] BackBuffer { get; set; }
+        private Charsel[,] FrontBuffer { get; set; }
 
         private readonly Action<string> consoleWriter;
 
@@ -128,7 +129,7 @@ namespace Konsole.Graphics.Rendering
             */
         }
 
-        public void Render(bool Wireframe = false)
+        public void Render(bool wireframe = false)
         {
             watch.Restart();
 
@@ -136,14 +137,16 @@ namespace Konsole.Graphics.Rendering
 
             if (bufferInvalid)
             {
-                Buffer = new Charsel[Height, Width];
+                BackBuffer = new Charsel[Height, Width];
+                FrontBuffer = new Charsel[Height, Width];
+                FrontBuffer.ClearBuffer(byte.MaxValue);
                 output.Append("\u001b[?25l");
                 projectionMatrix = Matrix4x4.CreatePerspectiveFieldOfView(1.5708f, Width / (float)Height, 0.1f, float.PositiveInfinity);
                 pixelMatrix = Matrix4x4.CreateScale(width / 2f, height / 2f, 1) * Matrix4x4.CreateTranslation(width / 2f, height / 2f, 0);
                 bufferInvalid = false;
             }
 
-            Buffer.ClearBuffer();
+            BackBuffer.ClearBuffer();
 
             drawables[0].Rotation = new Vector3((float)clock.Time, 0, 0);
             foreach (Drawable d in drawables)
@@ -186,7 +189,7 @@ namespace Konsole.Graphics.Rendering
                             var weights = V4Extensions.Barycentric(pos1, pos2, pos3, new Vector2(x + 0.5f, y + 0.5f));
                             var depth = (pos1.Z * weights.X) + (pos2.Z * weights.Y) + (pos3.Z * weights.Z);
 
-                            if (Buffer[y, x].Depth == null && depth > 0f || Buffer[y, x].Depth > depth && depth > 0f)
+                            if (BackBuffer[y, x].Depth == null && depth > 0f || BackBuffer[y, x].Depth > depth && depth > 0f)
                             {
                                 Vector2 sampleUV = new Vector2(
                                     (t.A.UV.X / pos1.Z * weights.X * depth) + (t.B.UV.X / pos2.Z * weights.Y * depth) + (t.C.UV.X / pos3.Z * weights.Z * depth),
@@ -203,9 +206,9 @@ namespace Konsole.Graphics.Rendering
                                 SampleX = (int) ((sampleUV.X % 1 + 1) % 1 * (m.Texture.Width - 1));
                                 SampleY = (int) ((-sampleUV.Y % 1 + 1) % 1 * (m.Texture.Height - 1));
 
-                                Buffer[y, x].Char = '█';
-                                Buffer[y, x].Colour = new Colour3(1) * Math.Clamp(Vector3.Dot(sampleNormal, new Vector3(0, 1, 0.8f)), 0, 1) * m.Texture[SampleX, SampleY];
-                                Buffer[y, x].Depth = depth;
+                                BackBuffer[y, x].Char = '█';
+                                BackBuffer[y, x].Colour = new Colour3(1) * Math.Clamp(Vector3.Dot(sampleNormal, new Vector3(0, 1, 0.8f)), 0, 1) * m.Texture[SampleX, SampleY];
+                                BackBuffer[y, x].Depth = depth;
                             }
                         }
                     }
@@ -215,25 +218,62 @@ namespace Konsole.Graphics.Rendering
             output.Append("\u001b[H");
 
             Colour3? prevColour = null;
+            int skipped = 0;
+            bool skippedLine = false;
 
             for (var i = 0; i < height; i++)
             {
                 for (var j = 0; j < width; j++)
                 {
-                    Charsel c = Buffer[i, j];
-                    if (c.Colour != prevColour)
+                    Charsel back = BackBuffer[i, j];
+                    Charsel front = FrontBuffer[i, j];
+
+                    if (back == front)
+                    {
+                        skipped++;
+                        continue;
+                    }
+
+                    if (skipped != 0)
+                    {
+                        output.Append("\u001b[");
+                        if (skippedLine)
+                        {
+                            if (i != 0)
+                                output.Append(i + 1);
+                            output.Append(';');
+                            if (j != 0)
+                                output.Append(j + 1);
+                            output.Append('H');
+
+                            skippedLine = false;
+                        }
+                        else
+                        {
+                            if (skipped != 1)
+                                output.Append(skipped);
+                            output.Append('C');
+                        }
+
+                        skipped = 0;
+                    }
+
+                    if (back.Colour != prevColour)
                     {
                         output.Append("\u001b[38;2;");
-                        output.Append(c.Colour.R.ToByte());
+                        output.Append(back.Colour.R.ToByte());
                         output.Append(';');
-                        output.Append(c.Colour.G.ToByte());
+                        output.Append(back.Colour.G.ToByte());
                         output.Append(';');
-                        output.Append(c.Colour.B.ToByte());
+                        output.Append(back.Colour.B.ToByte());
                         output.Append('m');
-                        prevColour = c.Colour;
+                        prevColour = back.Colour;
                     }
-                    output.Append(c.Char == 0 ? ' ' : c.Char);
+                    output.Append(back.Char == 0 ? ' ' : back.Char);
                 }
+
+                if (skipped != 0)
+                    skippedLine = true;
 
                 if (i != height - 1)
                     output.AppendLine();
@@ -241,6 +281,10 @@ namespace Konsole.Graphics.Rendering
             var renderTime = watch.ElapsedTicks;
             var renderTimeMs = watch.ElapsedMilliseconds;
             consoleWriter(output.ToString());
+
+            var swap = FrontBuffer;
+            FrontBuffer = BackBuffer;
+            BackBuffer = swap;
             watch.Stop();
             Debug.WriteLine($"Render time: {renderTimeMs}ms. Draw time: {watch.ElapsedMilliseconds - renderTimeMs}ms. Total time: {watch.ElapsedMilliseconds}ms FPS: {1000f / watch.ElapsedMilliseconds}.");
         }
