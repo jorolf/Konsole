@@ -1,11 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
-using System.Reflection;
-using Konsole;
-using Konsole.Extensions;
-using Konsole.Graphics.Colour;
-using Konsole.IO;
+﻿using Konsole;
 
 namespace TestApp
 {
@@ -13,8 +6,6 @@ namespace TestApp
     {
         static void Main()
         {
-            //var path = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar;
-
             KonsoleWindow window = new KonsoleWindow();
 
             while (true)

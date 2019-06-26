@@ -12,12 +12,12 @@ namespace Konsole.Extensions
                     array[i, a] = obj;
         }
 
-        public static void ClearBuffer<T>(this T[,] array)
+        public static void ClearBuffer<T>(this T[,] array, byte value = 0)
         {
             unsafe
             {
                 void* ptr = Unsafe.AsPointer(ref array[0,0]);
-                Unsafe.InitBlock(ptr, 0, (uint)(array.Length * Unsafe.SizeOf<T>()));
+                Unsafe.InitBlock(ptr, value, (uint)(array.Length * Unsafe.SizeOf<T>()));
             }
         }
 
