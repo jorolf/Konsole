@@ -25,6 +25,7 @@ namespace Konsole.Graphics.Rendering
 
         private Matrix4x4 viewMatrix = Matrix4x4.CreateLookAt(Vector3.Zero, new Vector3(0, 0, 1), new Vector3(0, 1, 0));
         private Matrix4x4 projectionMatrix;
+        private Matrix4x4 pixelMatrix;
 
         private FrameClock clock = new FrameClock();
         private Stopwatch watch = new Stopwatch();
@@ -138,83 +139,78 @@ namespace Konsole.Graphics.Rendering
                 Buffer = new Charsel[Height, Width];
                 output.Append("\u001b[?25l");
                 projectionMatrix = Matrix4x4.CreatePerspectiveFieldOfView(1.5708f, Width / (float)Height, 0.1f, float.PositiveInfinity);
+                pixelMatrix = Matrix4x4.CreateScale(width / 2f, height / 2f, 1) * Matrix4x4.CreateTranslation(width / 2f, height / 2f, 0);
                 bufferInvalid = false;
             }
 
-            Buffer.Populate(new Charsel
-            {
-                Char = ' ',
-                Colour = new Colour3(0, 0, 0),
-                Depth = null
-            });
+            Buffer.ClearBuffer();
+
             drawables[0].Rotation = new Vector3((float)clock.Time, 0, 0);
             foreach (Drawable d in drawables)
+            {
+                var matrix = d.DrawableMatrix;
+                matrix *= viewMatrix;
+                matrix *= projectionMatrix;
+                matrix *= pixelMatrix;
+
                 foreach (Mesh m in d.Meshes)
-                    foreach (Triangle t in m.Triangles)
+                foreach (Triangle t in m.Triangles)
+                {
+                    Vector4 pos1 = new Vector4(t.A.Position, 1);
+                    Vector4 pos2 = new Vector4(t.B.Position, 1);
+                    Vector4 pos3 = new Vector4(t.C.Position, 1);
+
+                    pos1 = Vector4.Transform(pos1, matrix);
+                    pos2 = Vector4.Transform(pos2, matrix);
+                    pos3 = Vector4.Transform(pos3, matrix);
+
+                    pos1 /= pos1.W;
+                    pos2 /= pos2.W;
+                    pos3 /= pos3.W;
+
+                    V4Extensions.Bounds(pos1, pos2, pos3, out Vector2 BoundsStart, out Vector2 BoundsEnd);
+
+                    for (var y = (int) BoundsStart.Y; y < (int) BoundsEnd.Y; y++)
+                    for (var x = (int) BoundsStart.X; x < (int) BoundsEnd.X; x++)
                     {
-                        Vector4 pos1 = new Vector4(t.A.Position, 1);
-                        Vector4 pos2 = new Vector4(t.B.Position, 1);
-                        Vector4 pos3 = new Vector4(t.C.Position, 1);
+                        if (x >= Width || y >= Height || x < 0 || y < 0)
+                            continue;
 
-                        var matrix = d.DrawableMatrix;
+                        var sample = new Vector2(x + 0.5f, y + 0.5f);
 
-                        matrix *= viewMatrix;
-                        matrix *= projectionMatrix;
+                        bool CW = V4Extensions.Edge(pos1, pos2, sample) && V4Extensions.Edge(pos2, pos3, sample) && V4Extensions.Edge(pos3, pos1, sample);
+                        bool CCW = V4Extensions.Edge(pos1, pos3, sample) && V4Extensions.Edge(pos3, pos2, sample) && V4Extensions.Edge(pos2, pos1, sample);
 
-                        pos1 = Vector4.Transform(pos1, matrix);
-                        pos2 = Vector4.Transform(pos2, matrix);
-                        pos3 = Vector4.Transform(pos3, matrix);
+                        if (CW || CCW)
+                        {
+                            var weights = V4Extensions.Barycentric(pos1, pos2, pos3, new Vector2(x + 0.5f, y + 0.5f));
+                            var depth = (pos1.Z * weights.X) + (pos2.Z * weights.Y) + (pos3.Z * weights.Z);
 
-                        pos1 /= pos1.W;
-                        pos2 /= pos2.W;
-                        pos3 /= pos3.W;
-
-                        pos1 = pos1.ToPixel(Width, Height);
-                        pos2 = pos2.ToPixel(Width, Height);
-                        pos3 = pos3.ToPixel(Width, Height);
-
-                        V4Extensions.Bounds(pos1, pos2, pos3, out Vector2 BoundsStart, out Vector2 BoundsEnd);
-
-                        for (var y = (int)BoundsStart.Y; y < (int)BoundsEnd.Y; y++)
-                            for (var x = (int)BoundsStart.X; x < (int)BoundsEnd.X; x++)
+                            if (Buffer[y, x].Depth == null && depth > 0f || Buffer[y, x].Depth > depth && depth > 0f)
                             {
-                                if (x >= Width || y >= Height || x < 0 || y < 0)
-                                    continue;
+                                Vector2 sampleUV = new Vector2(
+                                    (t.A.UV.X / pos1.Z * weights.X * depth) + (t.B.UV.X / pos2.Z * weights.Y * depth) + (t.C.UV.X / pos3.Z * weights.Z * depth),
+                                    (t.A.UV.Y / pos1.Z * weights.X * depth) + (t.B.UV.Y / pos2.Z * weights.Y * depth) + (t.C.UV.Y / pos3.Z * weights.Z * depth)
+                                );
+                                Vector3 sampleNormal = new Vector3(
+                                    (t.A.Normal.X / pos1.Z * weights.X * depth) + (t.B.Normal.X / pos2.Z * weights.Y * depth) + (t.C.Normal.X / pos3.Z * weights.Z * depth),
+                                    (t.A.Normal.Y / pos1.Z * weights.X * depth) + (t.B.Normal.Y / pos2.Z * weights.Y * depth) + (t.C.Normal.Y / pos3.Z * weights.Z * depth),
+                                    (t.A.Normal.Z / pos1.Z * weights.X * depth) + (t.B.Normal.Z / pos2.Z * weights.Y * depth) + (t.C.Normal.Z / pos3.Z * weights.Z * depth)
+                                );
+                                int SampleX;
+                                int SampleY;
 
-                                var sample = new Vector2(x + 0.5f, y + 0.5f);
+                                SampleX = (int) ((sampleUV.X % 1 + 1) % 1 * (m.Texture.Width - 1));
+                                SampleY = (int) ((-sampleUV.Y % 1 + 1) % 1 * (m.Texture.Height - 1));
 
-                                bool CW = V4Extensions.Edge(pos1, pos2, sample) && V4Extensions.Edge(pos2, pos3, sample) && V4Extensions.Edge(pos3, pos1, sample);
-                                bool CCW = V4Extensions.Edge(pos1, pos3, sample) && V4Extensions.Edge(pos3, pos2, sample) && V4Extensions.Edge(pos2, pos1, sample);
-
-                                if (CW || CCW)
-                                {
-                                    var weights = V4Extensions.Barycentric(pos1, pos2, pos3, new Vector2(x + 0.5f, y + 0.5f));
-                                    var depth = (pos1.Z * weights.X) + (pos2.Z * weights.Y) + (pos3.Z * weights.Z);
-
-                                    if (Buffer[y, x].Depth == null && depth > 0f || Buffer[y, x].Depth > depth && depth > 0f)
-                                    {
-                                        Vector2 sampleUV = new Vector2(
-                                            (t.A.UV.X / pos1.Z * weights.X * depth) + (t.B.UV.X / pos2.Z * weights.Y * depth) + (t.C.UV.X / pos3.Z * weights.Z * depth),
-                                            (t.A.UV.Y / pos1.Z * weights.X * depth) + (t.B.UV.Y / pos2.Z * weights.Y * depth) + (t.C.UV.Y / pos3.Z * weights.Z * depth)
-                                        );
-                                        Vector3 sampleNormal = new Vector3(
-                                            (t.A.Normal.X / pos1.Z * weights.X * depth) + (t.B.Normal.X / pos2.Z * weights.Y * depth) + (t.C.Normal.X / pos3.Z * weights.Z * depth),
-                                            (t.A.Normal.Y / pos1.Z * weights.X * depth) + (t.B.Normal.Y / pos2.Z * weights.Y * depth) + (t.C.Normal.Y / pos3.Z * weights.Z * depth),
-                                            (t.A.Normal.Z / pos1.Z * weights.X * depth) + (t.B.Normal.Z / pos2.Z * weights.Y * depth) + (t.C.Normal.Z / pos3.Z * weights.Z * depth)
-                                        );
-                                        int SampleX;
-                                        int SampleY;
-
-                                        SampleX = (int)((sampleUV.X % 1 + 1) % 1 * (m.Texture.Width - 1));
-                                        SampleY = (int)((-sampleUV.Y % 1 + 1) % 1 * (m.Texture.Height - 1));
-
-                                        Buffer[y, x].Char = '█';
-                                        Buffer[y, x].Colour = new Colour3(1) * Math.Clamp(Vector3.Dot(sampleNormal, new Vector3(0, 1, 0.8f)), 0, 1) * m.Texture[SampleX, SampleY];
-                                        Buffer[y, x].Depth = depth;
-                                    }
-                                }
+                                Buffer[y, x].Char = '█';
+                                Buffer[y, x].Colour = new Colour3(1) * Math.Clamp(Vector3.Dot(sampleNormal, new Vector3(0, 1, 0.8f)), 0, 1) * m.Texture[SampleX, SampleY];
+                                Buffer[y, x].Depth = depth;
                             }
+                        }
                     }
+                }
+            }
 
             output.Append("\u001b[H");
 
@@ -227,10 +223,16 @@ namespace Konsole.Graphics.Rendering
                     Charsel c = Buffer[i, j];
                     if (c.Colour != prevColour)
                     {
-                        output.Append($"\u001b[38;2;{c.Colour.R.ToByte()};{c.Colour.G.ToByte()};{c.Colour.B.ToByte()}m");
+                        output.Append("\u001b[38;2;");
+                        output.Append(c.Colour.R.ToByte());
+                        output.Append(';');
+                        output.Append(c.Colour.G.ToByte());
+                        output.Append(';');
+                        output.Append(c.Colour.B.ToByte());
+                        output.Append('m');
                         prevColour = c.Colour;
                     }
-                    output.Append(c.Char);
+                    output.Append(c.Char == 0 ? ' ' : c.Char);
                 }
 
                 if (i != height - 1)

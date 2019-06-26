@@ -6,41 +6,27 @@ namespace Konsole.Extensions
 {
     public static class V4Extensions
     {
-        public static bool Edge(Vector4 v1, Vector4 v2, Vector2 samplePoint, bool Wireframe = false)
+        public static bool Edge(Vector4 v1, Vector4 v2, Vector2 samplePoint, bool wireframe = false)
         {
             var edge = (samplePoint.X - v1.X) * (v2.Y - v1.Y) - (samplePoint.Y - v1.Y) * (v2.X - v1.X);
 
-            if (Wireframe)
+            if (wireframe)
                 return edge == 0;
             else
                 return edge >= 0;
         }
-        public static void Bounds(Vector4 a, Vector4 b, Vector4 c, out Vector2 TopLeft, out Vector2 BottomRight)
-        {
-            TopLeft.X = (int)MathF.Round(MathF.Min(a.X, MathF.Min(b.X, c.X)), MidpointRounding.ToEven);
-            TopLeft.Y = (int)MathF.Round(MathF.Min(a.Y, MathF.Min(b.Y, c.Y)), MidpointRounding.ToEven);
-            BottomRight.X = (int)MathF.Round(MathF.Max(a.X, MathF.Max(b.X, c.X)), MidpointRounding.ToEven);
-            BottomRight.Y = (int)MathF.Round(MathF.Max(a.Y, MathF.Max(b.Y, c.Y)), MidpointRounding.ToEven);
 
-        }
-        /// <summary>
-        /// Remaps the <see cref="Vector4"/>'s X and Y coordinate to Pixel Space
-        /// </summary>
-        /// <param name="v"></param>
-        /// <param name="Width"></param>
-        /// <param name="Height"></param>
-        /// <returns></returns>
-        public static Vector4 ToPixel(this Vector4 v, float Width, float Height)
+        public static void Bounds(Vector4 a, Vector4 b, Vector4 c, out Vector2 topLeft, out Vector2 bottomRight)
         {
-            return v * new Vector4(Width / 2f, Height / 2f, 1, 1) + new Vector4(Width / 2f, Height / 2f, 0, 0);
+            topLeft.X = (int)MathF.Round(MathF.Min(a.X, MathF.Min(b.X, c.X)), MidpointRounding.ToEven);
+            topLeft.Y = (int)MathF.Round(MathF.Min(a.Y, MathF.Min(b.Y, c.Y)), MidpointRounding.ToEven);
+            bottomRight.X = (int)MathF.Round(MathF.Max(a.X, MathF.Max(b.X, c.X)), MidpointRounding.ToEven);
+            bottomRight.Y = (int)MathF.Round(MathF.Max(a.Y, MathF.Max(b.Y, c.Y)), MidpointRounding.ToEven);
         }
 
         /// <summary>
         /// Returns the Barycentric coordinates of the point inside the triangle.
         /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <param name="c"></param>
         /// <returns></returns>
         public static Vector3 Barycentric(Vector4 v1, Vector4 v2, Vector4 v3, Vector2 Point)
         {

@@ -13,9 +13,12 @@ namespace TestApp
     {
         static void Main()
         {
-            var path = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar;
+            //var path = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar;
 
             KonsoleWindow window = new KonsoleWindow();
+
+            while (true)
+                window.Render();
         }
     }
 }

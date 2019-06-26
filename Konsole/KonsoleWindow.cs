@@ -6,6 +6,8 @@ namespace Konsole
 {
     public class KonsoleWindow
     {
+        private FrameBuffer buffer;
+
         public KonsoleWindow()
         {
             Console.WriteLine($"Height: {Console.WindowHeight}, Width: {Console.WindowWidth}");
@@ -14,14 +16,14 @@ namespace Konsole
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
                 Windows.EnableWindowsColour();
 
-            var buffer = new FrameBuffer(Console.Write);
+            buffer = new FrameBuffer(Console.Write);
+        }
 
-            while (true)
-            {
-                buffer.Width = Console.WindowWidth;
-                buffer.Height = Console.WindowHeight;
-                buffer.Render();
-            }
+        public void Render()
+        {
+            buffer.Width = Console.WindowWidth;
+            buffer.Height = Console.WindowHeight;
+            buffer.Render();
         }
     }
 }
