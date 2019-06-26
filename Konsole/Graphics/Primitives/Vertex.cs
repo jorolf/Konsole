@@ -15,6 +15,7 @@ namespace Konsole.Graphics.Primitives
             Position = position;
             Normal = normal;
             UV = uv;
+            Colour = new Color();
         }
     }
 }

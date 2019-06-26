@@ -85,14 +85,14 @@ namespace Konsole.Graphics.Rendering
             */
             Drawable s = new Drawable
             {
-                Meshes = OBJParser.ParseFile(GameDirectory + "normalShrek.obj", Properties.FlipY),
-                Scale = new Vector3(1.1f),
-                Position = new Vector3(0, 0, 0.8f),
-                Origin = new Vector3(0, 0.4f, 0),
+                Meshes = OBJParser.ParseFile(GameDirectory + "Assets/Core/normalShrek.obj", Properties.FlipY),
+                Scale = new Vector3(1.05f),
+                Position = new Vector3(0, 0, 1f),
+                Origin = new Vector3(0, 0.5f, 0),
                 Rotation = new Vector3(MathF.PI, 0, 0)
             };
-            s.Meshes[1].Texture = new ImageTexture(GameDirectory + "Shrek");
-            s.Meshes[0].Texture = new ImageTexture(GameDirectory + "shrekshirt");
+            s.Meshes[1].Texture = new ImageTexture(GameDirectory + "Assets/Core/Shrek");
+            s.Meshes[0].Texture = new ImageTexture(GameDirectory + "Assets/Core/shrekshirt");
 
             //drawables.Add(d);
             drawables.Add(s);
@@ -113,7 +113,7 @@ namespace Konsole.Graphics.Rendering
 
                 )
             };
-            m.Texture = new ImageTexture(GameDirectory + "testImage");
+            //m.Texture = new ImageTexture(GameDirectory + "testImage");
 
             /*
             drawables.Add(new Drawable

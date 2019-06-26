@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace Konsole.Graphics.Colour
 {
@@ -9,6 +10,7 @@ namespace Konsole.Graphics.Colour
     /// </summary>
     public struct Colour3 : IEquatable<Colour3>, IEquatable<Vector3>
     {
+
 
         private Vector3 colour;
         public float R { get => colour.X; set => colour.X = value; }
@@ -34,6 +36,10 @@ namespace Konsole.Graphics.Colour
         {
             colour = new Vector3(brightness);
         }
+        public Colour3(Vector3 vec)
+        {
+            colour = vec;
+        }
 
         public static Colour3 FromBytes(byte r, byte g, byte b)
         {
@@ -43,22 +49,26 @@ namespace Konsole.Graphics.Colour
         #region Operators
         public static Colour3 operator *(Colour3 a, float num)
         {
-            return new Colour3(a.R * num, a.G * num, a.B * num);
+            return new Colour3(a.colour * num);
         }
 
         public static Colour3 operator /(Colour3 a, float num)
         {
-            return new Colour3(a.R / num, a.G / num, a.B / num);
+            return new Colour3(a.colour / num);
         }
 
         public static Colour3 operator +(Colour3 a, Colour3 b)
         {
-            return new Colour3(a.R + b.R, a.G + b.G, a.B + b.B);
+            return new Colour3(a.colour + b.colour);
         }
 
+        public static Colour3 operator -(Colour3 a, Colour3 b)
+        {
+            return new Colour3(a.colour - b.colour);
+        }
         public static Colour3 operator *(Colour3 a, Colour3 b)
         {
-            return new Colour3(a.R * b.R, a.G * b.G, a.B * b.B);
+            return new Colour3(a.colour * b.colour);
         }
 
         public static bool operator ==(Colour3 a, Colour3 b)
