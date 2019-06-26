@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Konsole.Graphics.Colour;
 
@@ -16,7 +17,7 @@ namespace Konsole.Graphics.Rendering
 
         public bool Equals(Charsel other)
         {
-            return Colour.Equals(other.Colour) && Char == other.Char && Depth.Equals(other.Depth);
+            return Colour == other.Colour && Char == other.Char;
         }
 
         public override bool Equals(object obj)
@@ -27,7 +28,7 @@ namespace Konsole.Graphics.Rendering
 
         public static bool operator ==(Charsel a, Charsel b)
         {
-            return a.Equals(b);
+            return a.Colour.Equals(b.Colour) && a.Char == b.Char;
         }
         public static bool operator !=(Charsel a, Charsel b)
         {

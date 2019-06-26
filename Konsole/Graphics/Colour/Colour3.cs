@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Numerics;
-using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Konsole.Graphics.Colour
 {
@@ -8,6 +8,7 @@ namespace Konsole.Graphics.Colour
     /// <summary>
     /// Stores the RGB values in form of a float ranging from 0-1 for 0-255
     /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
     public struct Colour3 : IEquatable<Colour3>, IEquatable<Vector3>
     {
 
