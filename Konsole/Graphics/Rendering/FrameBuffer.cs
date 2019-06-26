@@ -286,7 +286,7 @@ namespace Konsole.Graphics.Rendering
             FrontBuffer = BackBuffer;
             BackBuffer = swap;
             watch.Stop();
-            Debug.WriteLine($"Render time: {renderTimeMs}ms. Draw time: {watch.ElapsedMilliseconds - renderTimeMs}ms. Total time: {watch.ElapsedMilliseconds}ms FPS: {1000f / watch.ElapsedMilliseconds}.");
+            Debug.WriteLine($"Render time: {renderTimeMs}ms. Draw time: {watch.ElapsedMilliseconds - renderTimeMs}ms. Total time: {watch.ElapsedMilliseconds}ms FPS: {1000f / watch.ElapsedMilliseconds}. Output length: {output.Length}.");
         }
     }
 }
