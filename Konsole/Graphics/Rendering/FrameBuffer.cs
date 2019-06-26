@@ -18,6 +18,10 @@ namespace Konsole.Graphics.Rendering
     {
         private readonly StringBuilder output = new StringBuilder();
 
+        private static readonly char[] subpixels = {
+            ' ', '╝', '╚', '▀', '╗', '►', '/', 'P', '╔', '\\', '◄', '¶', '▄', 'b', 'J', '█'
+        };
+
         public Charsel[,] Buffer { get; private set; }
 
         private readonly Action<string> consoleWriter;
@@ -60,6 +64,9 @@ namespace Konsole.Graphics.Rendering
             }
         }
 
+        private int resolutionWidth => Width * 2;
+        private int resolutionHeight => Height * 2;
+
         public FrameBuffer(Action<string> writeAction)
         {
             bufferInvalid = true;
@@ -77,7 +84,7 @@ namespace Konsole.Graphics.Rendering
                 Origin = new Vector3(0,1.2f,0),
                 Rotation = new Vector3(MathF.PI / 2,0,0)
             };
-            Drawable s = new Drawable
+            /*Drawable s = new Drawable
             {
                 Mesh = new Mesh
                 {
@@ -87,8 +94,8 @@ namespace Konsole.Graphics.Rendering
                 Scale = new Vector3(0.66f),
                 Position = new Vector3(0, 0, 3f),
                 Origin = new Vector3(0, 0.4f, 0),
-            };
-            //drawables.Add(d);
+            };*/
+            drawables.Add(d);
             //drawables.Add(s);
             drawables.Add(new DrawableTriangle
             {
@@ -106,9 +113,9 @@ namespace Konsole.Graphics.Rendering
 
             if (bufferInvalid)
             {
-                Buffer = new Charsel[Height, Width];
+                Buffer = new Charsel[resolutionHeight, resolutionWidth];
                 output.Append("\u001b[?25l");
-                projectionMatrix = Matrix4x4.CreatePerspectiveFieldOfView(1.5708f, Width / (float)Height, 0.1f, float.PositiveInfinity);
+                projectionMatrix = Matrix4x4.CreatePerspectiveFieldOfView(1.5708f, resolutionWidth / (float)resolutionHeight, 0.1f, float.PositiveInfinity);
                 bufferInvalid = false;
             }
 
@@ -141,16 +148,16 @@ namespace Konsole.Graphics.Rendering
                     pos2 /= pos2.W;
                     pos3 /= pos3.W;
 
-                    pos1 = pos1.ToPixel(Width, Height);
-                    pos2 = pos2.ToPixel(Width, Height);
-                    pos3 = pos3.ToPixel(Width, Height);
+                    pos1 = pos1.ToPixel(resolutionWidth, resolutionHeight);
+                    pos2 = pos2.ToPixel(resolutionWidth, resolutionHeight);
+                    pos3 = pos3.ToPixel(resolutionWidth, resolutionHeight);
 
                     V4Extensions.Bounds(pos1, pos2, pos3, out Vector2 BoundsStart, out Vector2 BoundsEnd);
 
                     for (var y = (int)BoundsStart.Y; y < (int)BoundsEnd.Y; y++)
                         for (var x = (int)BoundsStart.X; x < (int)BoundsEnd.X; x++)
                         {
-                            if (x >= Width || y >= Height || x < 0 || y < 0)
+                            if (x >= resolutionWidth || y >= resolutionHeight || x < 0 || y < 0)
                                 continue;
 
                             var sample = new Vector2(x + 0.5f, y + 0.5f);
@@ -179,7 +186,7 @@ namespace Konsole.Graphics.Rendering
 
             Colour3? prevColour = null;
 
-            for (var i = 0; i < height; i++)
+            /*for (var i = 0; i < height; i++)
             {
                 for (var j = 0; j < width; j++)
                 {
@@ -194,10 +201,38 @@ namespace Konsole.Graphics.Rendering
 
                 if (i != height - 1)
                     output.AppendLine();
+            }*/
+
+            for (var i = 0; i < resolutionHeight; i += 2)
+            {
+                for (var j = 0; j < resolutionWidth; j += 2)
+                {
+                    Charsel c1 = Buffer[i, j];
+                    Charsel c2 = Buffer[i, j + 1];
+                    Charsel c3 = Buffer[i + 1, j];
+                    Charsel c4 = Buffer[i + 1, j + 1];
+
+                    if (!c1.Colour.Equals(prevColour))
+                    {
+                        output.Append($"\u001b[38;2;{c1.Colour.R.ToByte()};{c1.Colour.G.ToByte()};{c1.Colour.B.ToByte()}m");
+                        prevColour = c1.Colour;
+                    }
+
+                    char ch = subpixels[((c1.Char != ' ' ? 1 : 0) | (c2.Char != ' ' ? 1 << 1 : 0) | (c3.Char != ' ' ? 1 << 2 : 0) | (c4.Char != ' ' ? 1 << 3 : 0))/*.ToString()[0]*/];
+                    output.Append(ch);
+                }
+
+                if (i != resolutionHeight - 2)
+                    output.AppendLine();
             }
+
             var renderTime = watch.ElapsedTicks;
             var renderTimeMs = watch.ElapsedMilliseconds;
-            consoleWriter(output.ToString());
+
+            string outputStr = output.ToString();
+            Debug.WriteLine(outputStr.Length);
+
+            consoleWriter(outputStr);
             watch.Stop();
             Debug.WriteLine($"Render time: {renderTimeMs}ms. Draw time: {watch.ElapsedMilliseconds - renderTimeMs}ms. Total time: {watch.ElapsedMilliseconds}ms FPS: {1000f / watch.ElapsedMilliseconds}.");
         }
