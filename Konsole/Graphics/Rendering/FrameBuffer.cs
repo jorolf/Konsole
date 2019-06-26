@@ -225,7 +225,7 @@ namespace Konsole.Graphics.Rendering
                 for (var j = 0; j < width; j++)
                 {
                     Charsel c = Buffer[i, j];
-                    if (!c.Colour.Equals(prevColour))
+                    if (c.Colour != prevColour)
                     {
                         output.Append($"\u001b[38;2;{c.Colour.R.ToByte()};{c.Colour.G.ToByte()};{c.Colour.B.ToByte()}m");
                         prevColour = c.Colour;

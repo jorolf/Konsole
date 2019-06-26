@@ -106,18 +106,12 @@ namespace Konsole.Graphics.Colour
 
         public bool Equals(Colour3 other)
         {
-            if (colour == other.colour)
-                return true;
-            else
-                return false;
+            return colour == other.colour;
         }
 
         public bool Equals(Vector3 other)
         {
-            if (colour == other)
-                return true;
-            else
-                return false;
+            return colour == other;
         }
 
         public override string ToString()
