@@ -6,23 +6,25 @@ namespace Konsole
 {
     public class KonsoleWindow
     {
+        private readonly Func<(int, int)> consoleSize;
         private FrameBuffer buffer;
 
-        public KonsoleWindow()
+        public KonsoleWindow(Func<(int, int)> consoleSize, bool diff = true)
         {
-            Console.WriteLine($"Height: {Console.WindowHeight}, Width: {Console.WindowWidth}");
+            this.consoleSize = consoleSize;
+            var size = consoleSize();
+            Console.WriteLine($"Height: {size.Item2}, Width: {size.Item1}");
             Console.WriteLine("Initializing framebuffer & loading objects");
 
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
                 Windows.EnableWindowsColour();
 
-            buffer = new FrameBuffer(Console.Write);
+            buffer = new FrameBuffer(Console.Write, diff);
         }
 
         public void Render()
         {
-            buffer.Width = Console.WindowWidth;
-            buffer.Height = Console.WindowHeight;
+            (buffer.Width, buffer.Height) = consoleSize();
             buffer.Render();
         }
     }

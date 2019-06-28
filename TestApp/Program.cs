@@ -1,4 +1,5 @@
-﻿using Konsole;
+﻿using System;
+using Konsole;
 
 namespace TestApp
 {
@@ -6,7 +7,7 @@ namespace TestApp
     {
         static void Main()
         {
-            KonsoleWindow window = new KonsoleWindow();
+            KonsoleWindow window = new KonsoleWindow(() => (Console.WindowWidth, Console.WindowHeight), false);
 
             while (true)
                 window.Render();

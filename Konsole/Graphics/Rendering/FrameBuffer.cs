@@ -21,6 +21,7 @@ namespace Konsole.Graphics.Rendering
         private Charsel[,] FrontBuffer { get; set; }
 
         private readonly Action<string> consoleWriter;
+        private readonly bool saveDiff;
 
         private readonly List<Drawable> drawables = new List<Drawable>();
 
@@ -61,10 +62,11 @@ namespace Konsole.Graphics.Rendering
             }
         }
 
-        public FrameBuffer(Action<string> writeAction)
+        public FrameBuffer(Action<string> writeAction, bool saveDiff = false)
         {
             bufferInvalid = true;
             consoleWriter = writeAction;
+            this.saveDiff = saveDiff;
 
             /*
             Drawable d = new Drawable
@@ -138,8 +140,11 @@ namespace Konsole.Graphics.Rendering
             if (bufferInvalid)
             {
                 BackBuffer = new Charsel[Height, Width];
-                FrontBuffer = new Charsel[Height, Width];
-                FrontBuffer.ClearBuffer(byte.MaxValue);
+                if (saveDiff)
+                {
+                    FrontBuffer = new Charsel[Height, Width];
+                    FrontBuffer.ClearBuffer(byte.MaxValue);
+                }
                 output.Append("\u001b[?25l");
                 projectionMatrix = Matrix4x4.CreatePerspectiveFieldOfView(1.5708f, Width / (float)Height, 0.1f, float.PositiveInfinity);
                 pixelMatrix = Matrix4x4.CreateScale(width / 2f, height / 2f, 1) * Matrix4x4.CreateTranslation(width / 2f, height / 2f, 0);
@@ -226,36 +231,40 @@ namespace Konsole.Graphics.Rendering
                 for (var j = 0; j < width; j++)
                 {
                     Charsel back = BackBuffer[i, j];
-                    Charsel front = FrontBuffer[i, j];
 
-                    if (back == front)
+                    if (saveDiff)
                     {
-                        skipped++;
-                        continue;
-                    }
+                        Charsel front = FrontBuffer[i, j];
 
-                    if (skipped != 0)
-                    {
-                        output.Append("\u001b[");
-                        if (skippedLine)
+                        if (back == front)
                         {
-                            if (i != 0)
-                                output.Append(i + 1);
-                            output.Append(';');
-                            if (j != 0)
-                                output.Append(j + 1);
-                            output.Append('H');
-
-                            skippedLine = false;
-                        }
-                        else
-                        {
-                            if (skipped != 1)
-                                output.Append(skipped);
-                            output.Append('C');
+                            skipped++;
+                            continue;
                         }
 
-                        skipped = 0;
+                        if (skipped != 0)
+                        {
+                            output.Append("\u001b[");
+                            if (skippedLine)
+                            {
+                                if (i != 0)
+                                    output.Append(i + 1);
+                                output.Append(';');
+                                if (j != 0)
+                                    output.Append(j + 1);
+                                output.Append('H');
+
+                                skippedLine = false;
+                            }
+                            else
+                            {
+                                if (skipped != 1)
+                                    output.Append(skipped);
+                                output.Append('C');
+                            }
+
+                            skipped = 0;
+                        }
                     }
 
                     if (back.Colour != prevColour)
@@ -281,12 +290,14 @@ namespace Konsole.Graphics.Rendering
             var renderTime = watch.ElapsedTicks;
             var renderTimeMs = watch.ElapsedMilliseconds;
             consoleWriter(output.ToString());
-
-            var swap = FrontBuffer;
-            FrontBuffer = BackBuffer;
-            BackBuffer = swap;
+            if (saveDiff)
+            {
+                var swap = FrontBuffer;
+                FrontBuffer = BackBuffer;
+                BackBuffer = swap;
+            }
             watch.Stop();
-            Debug.WriteLine($"Render time: {renderTimeMs}ms. Draw time: {watch.ElapsedMilliseconds - renderTimeMs}ms. Total time: {watch.ElapsedMilliseconds}ms FPS: {1000f / watch.ElapsedMilliseconds}. Output length: {output.Length}.");
+            Debug.WriteLine($"Render time: {renderTimeMs}ms. Draw time: {watch.ElapsedMilliseconds - renderTimeMs}ms. Total time: {watch.ElapsedMilliseconds}ms FPS: {1000f / watch.ElapsedMilliseconds}. Output length: {output.Length}. Average time per character: {(watch.ElapsedMilliseconds - renderTimeMs) / (double)output.Length * 1000000}ns.");
         }
     }
 }

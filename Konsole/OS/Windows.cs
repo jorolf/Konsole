@@ -1,5 +1,8 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.InteropServices;
+using System.Text;
+using Microsoft.Win32.SafeHandles;
 
 namespace Konsole.OS
 {
@@ -27,13 +30,29 @@ namespace Konsole.OS
         [DllImport("kernel32.dll")]
         public static extern uint GetLastError();
 
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern int AllocConsole();
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern int FreeConsole();
+
+        public static void CreateConsole()
+        {
+            AllocConsole();
+            IntPtr stdHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+            SafeFileHandle safeFileHandle = new SafeFileHandle(stdHandle, true);
+            FileStream fileStream = new FileStream(safeFileHandle, FileAccess.Write);
+            Encoding encoding = Encoding.Default;
+            Console.SetOut(new StreamWriter(fileStream, encoding) {AutoFlush = true});
+        }
+
         public static void EnableWindowsColour()
         {
             var iStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
             if (!GetConsoleMode(iStdOut, out uint outConsoleMode))
             {
                 Console.WriteLine("failed to get output console mode");
-                Console.ReadKey();
+                //Console.Read();
                 return;
             }
 
@@ -41,7 +60,7 @@ namespace Konsole.OS
             if (!SetConsoleMode(iStdOut, outConsoleMode))
             {
                 Console.WriteLine($"failed to set output console mode, error code: {GetLastError()}");
-                Console.ReadKey();
+                //Console.Read();
                 return;
             }
         }
