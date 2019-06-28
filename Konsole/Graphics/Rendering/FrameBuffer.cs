@@ -7,6 +7,7 @@ using Konsole.IO;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Numerics;
 using System.Text;
 using static Konsole.Globals;
@@ -15,6 +16,7 @@ namespace Konsole.Graphics.Rendering
 {
     public class FrameBuffer
     {
+        private Stream outputStream = Console.OpenStandardOutput();
         private readonly StringBuilder output = new StringBuilder();
 
         private Charsel[,] BackBuffer { get; set; }
@@ -280,7 +282,9 @@ namespace Konsole.Graphics.Rendering
             }
             var renderTime = watch.ElapsedTicks;
             var renderTimeMs = watch.ElapsedMilliseconds;
-            consoleWriter(output.ToString());
+
+            outputStream.Write(Console.OutputEncoding.GetBytes(output.ToString()));
+            //consoleWriter(output.ToString());
 
             var swap = FrontBuffer;
             FrontBuffer = BackBuffer;
