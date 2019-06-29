@@ -23,11 +23,11 @@ namespace Konsole.IO
             {
                 var cached = File.Open(file + ".tex", FileMode.Open);
 
-                Span<byte> byteWidth = stackalloc byte[4];
-                Span<byte> byteHeight = stackalloc byte[4];
+                byte[] byteWidth = new byte[4];
+                byte[] byteHeight = new byte[4];
 
-                cached.Read(byteWidth);
-                cached.Read(byteHeight);
+                cached.Read(byteWidth, 0, 4);
+                cached.Read(byteHeight, 0, 4);
                 var width = byteWidth.Cast<byte, uint>()[0];
                 var height = byteHeight.Cast<byte, uint>()[0];
 

@@ -18,10 +18,10 @@ namespace Konsole.Extensions
 
         public static void Bounds(Vector4 a, Vector4 b, Vector4 c, out Vector2 topLeft, out Vector2 bottomRight)
         {
-            topLeft.X = (int)MathF.Round(MathF.Min(a.X, MathF.Min(b.X, c.X)), MidpointRounding.ToEven);
-            topLeft.Y = (int)MathF.Round(MathF.Min(a.Y, MathF.Min(b.Y, c.Y)), MidpointRounding.ToEven);
-            bottomRight.X = (int)MathF.Round(MathF.Max(a.X, MathF.Max(b.X, c.X)), MidpointRounding.ToEven);
-            bottomRight.Y = (int)MathF.Round(MathF.Max(a.Y, MathF.Max(b.Y, c.Y)), MidpointRounding.ToEven);
+            topLeft.X = (int)Math.Round(Math.Min(a.X, Math.Min(b.X, c.X)));
+            topLeft.Y = (int)Math.Round(Math.Min(a.Y, Math.Min(b.Y, c.Y)));
+            bottomRight.X = (int)Math.Round(Math.Max(a.X, Math.Max(b.X, c.X)));
+            bottomRight.Y = (int)Math.Round(Math.Max(a.Y, Math.Max(b.Y, c.Y)));
         }
 
         /// <summary>

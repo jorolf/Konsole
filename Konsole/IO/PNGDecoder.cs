@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace Konsole.IO
@@ -19,27 +20,28 @@ namespace Konsole.IO
             watch.Start();
             bool Read = false;
             var file = File.OpenRead(path);
-            Span<byte> compare = stackalloc byte[] { 137, 80, 78, 71, 13, 10, 26, 10 };
-            Span<byte> fileHeader = stackalloc byte[8];
-            file.Read(fileHeader);
-            if (compare.ReverseCast<byte, long>()[0] == fileHeader.ReverseCast<byte, long>()[0])
+            byte[] compare = { 137, 80, 78, 71, 13, 10, 26, 10 };
+            byte[] fileHeader = new byte[8];
+            file.Read(fileHeader, 0, fileHeader.Length);
+            if (Unsafe.As<byte, long>(ref compare[0]) == Unsafe.As<byte, long>(ref fileHeader[0]))
                 Read = true;
+
             while (Read)
             {
 
-                Span<byte> byteChunkLength = stackalloc byte[4];
-                file.Read(byteChunkLength);
-                Span<uint> chunkLength = byteChunkLength.ReverseCast<byte, uint>();
+                byte[] byteChunkLength = new byte[4];
+                file.Read(byteChunkLength, 0, byteChunkLength.Length);
+                uint chunkLength = Unsafe.As<byte, uint>(ref byteChunkLength[0]);
 
-                Span<byte> byteChunkType = stackalloc byte[4];
-                file.Read(byteChunkType);
+                byte[] byteChunkType = new byte[4];
+                file.Read(byteChunkType, 0, byteChunkType.Length);
                 var chunkType = byteChunkType.Cast<byte, uint>();
 
-                Console.WriteLine($"Chunk found! Type: {Encoding.ASCII.GetString(byteChunkType)}, Length: {chunkLength[0]}");
+                Console.WriteLine($"Chunk found! Type: {Encoding.ASCII.GetString(byteChunkType)}, Length: {chunkLength}");
                 Span<byte> bitDepth = stackalloc byte[1];
                 Span<byte> colourType = stackalloc byte[1];
                 Span<byte> interlacing = stackalloc byte[1];
-                switch (chunkLength[0])
+                switch (chunkLength)
                 {
                     case 0:
                         switch (chunkType[0])
@@ -50,17 +52,17 @@ namespace Konsole.IO
                         }
                         break;
                     default:
-                        Span<byte> byteChunkData = stackalloc byte[(int)chunkLength[0]];
-                        file.Read(byteChunkData);
+                        byte[] byteChunkData = new byte[(int)chunkLength];
+                        file.Read(byteChunkData, 0, byteChunkData.Length);
                         int pos;
                         switch (chunkType[0])
                         {
                             case ChunkTypes.Start:
                                 pos = 0;
-                                Span<uint> width = byteChunkData.Slice(pos, 4).ReverseCast<byte, uint>();
+                                Span<uint> width = byteChunkData.AsSpan().Slice(pos, 4).ReverseCast<byte, uint>();
                                 pos += 4;
 
-                                Span<uint> height = byteChunkData.Slice(pos, 4).ReverseCast<byte, uint>();
+                                Span<uint> height = byteChunkData.AsSpan().Slice(pos, 4).ReverseCast<byte, uint>();
                                 pos += 4;
                                 Console.WriteLine($"Picture Dimensions:{width[0]}x{height[0]}px");
                                 bitDepth[0] = byteChunkData[pos++];
@@ -72,16 +74,16 @@ namespace Konsole.IO
                                 break;
                             case ChunkTypes.Data:
                                 pos = 0;
-                                var compMethod = byteChunkData.Slice(pos, 1)[0] | ZlibHeader.CM;
-                                var compInfo = (byteChunkData.Slice(pos, 1)[0] | ZlibHeader.CI) >> 4;
+                                var compMethod = byteChunkData.AsSpan().Slice(pos, 1)[0] | ZlibHeader.CM;
+                                var compInfo = (byteChunkData.AsSpan().Slice(pos, 1)[0] | ZlibHeader.CI) >> 4;
                                 pos++;
-                                var fCheck = byteChunkData.Slice(pos, 1)[0] | 0b00001111;
-                                var fDict = (byteChunkData.Slice(pos, 1)[0] | 0b00010000) >> 4;
-                                var compLevel = (byteChunkData.Slice(pos, 1)[0] | 0b11100000) >> 5;
+                                var fCheck = byteChunkData.AsSpan().Slice(pos, 1)[0] | 0b00001111;
+                                var fDict = (byteChunkData.AsSpan().Slice(pos, 1)[0] | 0b00010000) >> 4;
+                                var compLevel = (byteChunkData.AsSpan().Slice(pos, 1)[0] | 0b11100000) >> 5;
                                 pos++;
                                 if (fDict == 1)
                                 {
-                                    var dictId = byteChunkData.Slice(pos, 4).Cast<byte, uint>();
+                                    var dictId = byteChunkData.AsSpan().Slice(pos, 4).Cast<byte, uint>();
                                     pos += 4;
                                 }
 

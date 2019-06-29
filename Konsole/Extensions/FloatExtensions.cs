@@ -13,7 +13,7 @@ namespace Konsole.Extensions
 
         public static byte ToByte(this float f)
         {
-            return (byte)(MathF.Min(f, 1) * 255f);
+            return (byte)(Math.Min(f, 1) * 255f);
         }
         public static int ToInt(this float f)
         {

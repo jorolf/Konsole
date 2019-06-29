@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace Konsole.Extensions
 {
@@ -15,6 +13,16 @@ namespace Konsole.Extensions
         {
             span.Reverse();
             return MemoryMarshal.Cast<TIn, TOut>(span);
+        }
+        public static TOut[] Cast<TIn, TOut>(this TIn[] array) where TIn : struct where TOut : struct
+        {
+            return MemoryMarshal.Cast<TIn, TOut>(array.AsSpan()).ToArray();
+        }
+        public static TOut[] ReverseCast<TIn, TOut>(this TIn[] array) where TIn : struct where TOut : struct
+        {
+            Span<TIn> span = array.AsSpan();
+            span.Reverse();
+            return MemoryMarshal.Cast<TIn, TOut>(span).ToArray();
         }
     }
 }

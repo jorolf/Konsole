@@ -16,7 +16,12 @@ namespace Konsole
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
                 Windows.EnableWindowsColour();
 
-            buffer = new FrameBuffer(Console.Write);
+            var outputStream = Console.OpenStandardOutput();
+            buffer = new RenderBuffer(s =>
+            {
+                var streamBuffer = Console.OutputEncoding.GetBytes(s);
+                outputStream.Write(streamBuffer, 0, streamBuffer.Length);
+            });
         }
 
         public void Render()

@@ -90,6 +90,16 @@ namespace Konsole.Graphics.Colour
         {
             return !a.Equals(b);
         }
+
+        public static implicit operator Colour3(uint colourInt)
+        {
+            return new Colour3
+            (
+                (colourInt >> 16 & 0xFF) / 255f,
+                (colourInt >> 8  & 0xFF) / 255f,
+                (colourInt       & 0xFF) / 255f
+            );
+        }
         #endregion
         /// <summary>
         /// Returns the Colour information in the byte format as an array of three Bytes.
@@ -97,11 +107,11 @@ namespace Konsole.Graphics.Colour
         /// <returns></returns>
         public byte[] ToByte()
         {
-            return new byte[]
+            return new []
             {
-                (byte)(MathF.Min(R, 1) * 255),
-                (byte)(MathF.Min(G, 1) * 255),
-                (byte)(MathF.Min(B, 1) * 255)
+                (byte)(Math.Min(R, 1) * 255),
+                (byte)(Math.Min(G, 1) * 255),
+                (byte)(Math.Min(B, 1) * 255)
             };
         }
 
