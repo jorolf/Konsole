@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Konsole.Graphics.Colour;
 using Konsole.Graphics.Rendering;
 using Konsole.OS;
 using osu.Framework.Platform;
@@ -17,7 +18,6 @@ namespace osu.Framework.Konsole
                     Windows.EnableWindowsColour();
 
                 var outputStream = Console.OpenStandardOutput();
-                Task task = null;
                 var buffer = new FrameworkFrameBuffer(s =>
                 {
                     var streamBuffer = Console.OutputEncoding.GetBytes(s);
@@ -28,7 +28,7 @@ namespace osu.Framework.Konsole
                 {
                     buffer.ReadPixels();
 
-                    task = Task.Run(() =>
+                    Task.Run(() =>
                     {
                         buffer.Width = Console.WindowWidth;
                         buffer.Height = Console.WindowHeight;
@@ -68,6 +68,8 @@ namespace osu.Framework.Konsole
             {
                 float xStep = window.Width / (float)Width;
                 float yStep = window.Height / (float)Height;
+
+                //int xStepHalf = (int)Math.Round(xStep / 2), yStepHalf = (int)Math.Round(yStep / 2);
                 int screenHeight = window.Height;
 
                 for (int y = 0; y < Height; y++)
@@ -75,7 +77,21 @@ namespace osu.Framework.Konsole
                     for (int x = 0; x < Width; x++)
                     {
                         buffer[y, x].Char = '█';
-                        buffer[y, x].Colour = screenBuffer[(int) (screenHeight - y * yStep - 1), (int) (x * xStep)] >> 8;
+
+                        var locY = (int)Math.Round((y - 0.5f) * yStep);
+                        var locX = (int)Math.Round((x - 0.5f) * xStep);
+                        if (locX < 1) locX += (int)xStep;
+                        if (locY < 1) locY += (int)yStep;
+
+                        Colour3 topLeft = screenBuffer[screenHeight - locY - (int)yStep, locX] >> 8;
+                        Colour3 topRight = screenBuffer[screenHeight - locY - (int)yStep, locX + (int)xStep] >> 8;
+                        Colour3 bottomLeft = screenBuffer[screenHeight - locY, locX] >> 8;
+                        Colour3 bottomRight = screenBuffer[screenHeight - locY, locX + (int)xStep] >> 8;
+
+                        var top = Colour3.Lerp(topLeft, topRight, (x * xStep - locX) / xStep);
+                        var bottom = Colour3.Lerp(bottomLeft, bottomRight, (x * xStep - locX) / xStep);
+
+                        buffer[y, x].Colour = Colour3.Lerp(top, bottom, (y * yStep - locY) / yStep);
                     }
                 }
             }

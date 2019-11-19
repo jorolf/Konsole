@@ -47,6 +47,11 @@ namespace Konsole.Graphics.Colour
             return new Colour3(r / 255f, g / 255f, b / 255f);
         }
 
+        public static Colour3 Lerp(Colour3 first, Colour3 second, float lerp)
+        {
+            return new Colour3(Vector3.Lerp(first.colour, second.colour, lerp));
+        }
+
         #region Operators
         public static Colour3 operator *(Colour3 a, float num)
         {

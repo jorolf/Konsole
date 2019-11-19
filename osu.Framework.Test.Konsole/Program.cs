@@ -18,10 +18,10 @@ namespace SampleGame.Konsole
             using (GameHost host = Host.GetSuitableHost(@"visual-tests", portableInstallation: portable))
             {
                 host.HookKonsole();
-                if (benchmark)
+                /*if (benchmark)
                     host.Run(new AutomatedVisualTestGame());
                 else
-                    host.Run(new VisualTestGame());
+                    host.Run(new VisualTestGame());*/
             }
         }
     }

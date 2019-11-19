@@ -3,7 +3,6 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.0</TargetFramework>
-    <RuntimeFrameworkVersion>3.0.0-preview6-27804-01</RuntimeFrameworkVersion>
     <PublishTrimmed>false</PublishTrimmed>
     <ApplicationIcon></ApplicationIcon>
     <StartupObject>TestApp.Program</StartupObject>
