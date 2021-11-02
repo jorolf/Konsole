@@ -39,7 +39,7 @@ namespace osu.Framework.Konsole
                 }
 
                 host.DrawThread.Scheduler.Add(UpdateFrame);
-                host.Activated += HookKonsole;
+                //host.Activated += HookKonsole;
             }
 
             host.Activated += HookKonsole;
@@ -58,19 +58,19 @@ namespace osu.Framework.Konsole
 
             public void ReadPixels()
             {
-                if (screenBuffer.Length != window.Width * window.Height)
-                    screenBuffer = new uint[window.Height, window.Width];
+                if (screenBuffer.Length != window.ClientSize.Width * window.ClientSize.Height)
+                    screenBuffer = new uint[window.ClientSize.Height, window.ClientSize.Width];
 
-                GL.ReadPixels(0, 0, window.Width, window.Height, PixelFormat.Rgba, PixelType.UnsignedInt8888, screenBuffer);
+                GL.ReadPixels(0, 0, window.ClientSize.Width, window.ClientSize.Height, PixelFormat.Rgba, PixelType.UnsignedInt8888, screenBuffer);
             }
 
             protected override void DrawFrame(ref Charsel[,] buffer)
             {
-                float xStep = window.Width / (float)Width;
-                float yStep = window.Height / (float)Height;
+                float xStep = window.ClientSize.Width / (float)Width;
+                float yStep = window.ClientSize.Height / (float)Height;
 
                 //int xStepHalf = (int)Math.Round(xStep / 2), yStepHalf = (int)Math.Round(yStep / 2);
-                int screenHeight = window.Height;
+                int screenHeight = window.ClientSize.Height;
 
                 for (int y = 0; y < Height; y++)
                 {

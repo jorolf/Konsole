@@ -71,9 +71,7 @@ namespace Konsole.Graphics.Rendering
             var output = KonsoleStringBuilder.CreateConsoleString(backBuffer, frontBuffer);
             consoleWriter(output);
 
-            var swap = frontBuffer;
-            frontBuffer = backBuffer;
-            backBuffer = swap;
+            (frontBuffer, backBuffer) = (backBuffer, frontBuffer);
             watch.Stop();
             Debug.WriteLine($"Render time: {renderTimeMs}ms. Draw time: {watch.ElapsedMilliseconds - renderTimeMs}ms. Total time: {watch.ElapsedMilliseconds}ms FPS: {1000f / watch.ElapsedMilliseconds}. Output length: {output.Length}.");
         }
